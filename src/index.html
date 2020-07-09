@@ -1,0 +1,254 @@
+<html doctype>
+    <head>
+        <title>POSTly - A tool for managing and testing REST APIs</title>
+        <meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">	
+        
+        <meta name="title" content="POSTly">
+        <meta name="description" content="Tool for managing your APIs right from your browser!">
+        <meta name="image" content="https://post-ly.github.io/logo.png">
+        <meta name="site" content="POSTly">
+
+        <meta name="twitter:card" content="POSTly" />
+        <meta name="twitter:site" content="POSTly" />
+        <meta name="twitter:creator" content="POSTly" />
+        <meta name="twitter:title" content="POSTly">
+        <meta name="twitter:description" content="Tool for managing your APIs right from your browser!">
+        <meta name="twitter:image" content="https://post-ly.github.io/logo.png">
+        <meta name="twitter:site" content="POSTly">
+
+        <meta property="og:url" content="POSTly" />
+        <meta property="og:title" content="POSTly" />
+        <meta property="og:description" content="Tool for managing your APIs right from your browser!" />
+        <meta property="og:image" content="https://post-ly.github.io/logo.png" />
+
+        <!--<meta name="theme-color" content="#dd4b39"> -->
+        <meta name="theme-color" content="rgb(221, 75, 57)">
+
+        <link rel="shortcut icon" href="../favicon.ico" />
+
+        <link href="./css/simple-line-icons.css" rel="stylesheet">
+
+        <link rel="stylesheet" href="./js/libs/OverlayScrollbars.min.css"></link>
+        <script src="./js/libs/OverlayScrollbars.min.js"></script>
+        <script src="./js/libs/smooth-scrollbar.js"></script>
+
+        <link rel="stylesheet" href="./css/codemirror.min.css"></link>
+        <link rel="stylesheet" href="./css/style.css"></link>
+        <link rel="stylesheet" href="./css/anim.css"></link>
+        <link rel="stylesheet" href="./css/media.css"></link>
+        <link rel="stylesheet" href="./css/modal.css"></link>
+        <link rel="stylesheet" href="./css/atoms.css"></link>
+        <link rel="stylesheet" href="./css/teams.css"></link>
+        <link rel="stylesheet" href="./css/Env.css"></link>
+
+	</head>
+    <body>	
+        <header>
+            <div class="headerTitle">
+                <span onclick="return showHis(event);" class="mobileSideBar icon-menu"></span>
+                <h2>POSTly</h2>
+            </div>
+            <nav>
+                <ul>
+                    <!--<li><a class="nav-btn" onclick="return createApi(event)"><span>Create API </span><span class="icon-diamond"></span></a></li>-->
+                    <li style="position: relative;">
+                        <a class="nav-btn" onclick="return showDropdown('.createListDropdown')">
+                            <span>Create </span>
+                            <span class="icon-plus"></span>
+                        </a>
+                        <div class="dropdown createListDropdown close">
+                            <ul>
+                                <li>
+                                    <a onclick="return createTeam(event)">
+                                        <span class="icon-people"></span>
+                                        <span>New Team </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a onclick="return createMockServerTab(event)">
+                                        <span class="icon-layers"></span>
+                                        <span>New Mock Server </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a onclick="return addNewTab(event)">
+                                        <span>New Request </span>
+                                        <span class="icon-chemistry"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a onclick="return createNewCollection(event)">
+                                        <span>New Collection </span>
+                                        <span class="icon-folder-alt"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a onclick="return createNewEnvTab(event)">
+                                        <span>New Env </span>
+                                        <span class="icon-grid"></span>
+                                    </a>
+                                </li>
+                                <li title="Imports a collection to the current team.">
+                                    <a onclick="return importCollectionModal(event)">
+                                        <span>Import Collection </span>
+                                        <span class="icon-cloud-download"></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>                        
+                    </li>
+                    <!--<li><a class="nav-btn" onclick="return addToTeam(event)"><span>Add </span><span class="icon-people"></span></a></li>
+                    <li><a class="nav-btn" onclick="return signInModal(event)"><span>Sign In </span><span class="icon-user"></span></a></li>-->
+                </ul>
+            </nav>
+        </header>
+		<div class="container">
+            <div class="historyCnt mhistoryCnt mClose">
+                        <div class="historyCntTop">
+                            <div onclick="return showHistoryCnt()" style="padding: 5px;padding-top: 10px;padding-bottom: 10px;">
+                                <span class="icon-close" style="padding-top: 4px;padding-bottom: 4px;font-size: 22px;"></span>
+                            </div>
+                        </div>
+                        <div class="tabs">
+                            <ul class="tabul">
+                                <li class="tab history tab-active"><a onclick="return toggleHistoryTabs(event, 'History')">History</a></li>
+                                <li class="tab history"><a onclick="return toggleHistoryTabs(event, 'Collections')">Collections</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div class="history History tab-content tab-content-active">
+                                <div style="padding: 9px 0; display: flex; justify-content: end;">
+                                    <button class="color-white bg-default pad-6" style="display: flex;align-items: center;" onclick="return clearAllHistory(event)">
+                                        <span style="padding-right: 3px;">Clear History</span><span style="padding-top: 2px;" class="icon-trash"></span></button>
+                                </div>
+                                <ul class="history historyUl">
+                                    <!--<li class="historyLi" onclick="return historyItemClick(event)"><span class="historyItem historyItemMethodType color-orangered bd-rad-3 pd-2">POST</span><span class="historyItemName">Untitled request</span></li>
+                                    <li class="historyLi" onclick="return historyItemClick(event)"><span class="historyItem historyItemMethodType color-orangered bd-rad-3 pd-2">POST</span><span class="historyItemName">Untitled request</span></li>-->
+                                </ul>
+                                
+                            </div>
+                            <div class="history Collections tab-content">
+                                <div style="padding: 9px 0; display: flex; justify-content: end;">
+                                    <button class="color-white bg-default pad-6" style="display: flex;align-items: center;" onclick="return createNewCollection(event)">
+                                        <span style="padding-right: 3px;">New Collection</span><span style="padding-top: 2px;" class="icon-plus"></span></button>
+                                </div>
+                                <ul class="collections historyUl">
+                                    <li class="historyLi" onclick="return historyCollectionsFolderClick(event, '.historyCollectionsFolder')">
+                                        <span class="icon-folder"></span><span> Project 1</span>
+                                        <ul class="historyCollectionsFolder close">
+                                            <li class="historyLi" onclick="return historyItemClick(event)"><span class="historyItem historyItemMethodType color-orangered bd-rad-3 pd-2">POST</span><span class="historyItemName">Untitled request</span></li>
+                                            <li class="historyLi" onclick="return historyItemClick(event)"><span class="historyItem historyItemMethodType color-orangered bd-rad-3 pd-2">POST</span><span class="historyItemName">Untitled request</span></li>
+                                        </ul>
+                                    </li>
+                                    <li class="historyLi" onclick="return historyCollectionsFolderClick(event)"><span class="icon-folder"><!-- &#128194 --></span><span> Project 2</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+            </div>
+            <div class="horiDivider"></div>
+            <div class="wrapper">
+                <div style="display: flex; justify-content: flex-end;border-bottom: 1px solid rgb(221, 221, 221);padding-bottom: 2px;">
+                    <span style="position: relative; padding-right: 2px;">
+                        Envs: 
+                        <a onclick="return showDropdown('.envsDropdown')" style="padding: 3px;background: gray;color: white;border-radius: 2px;display: inline-block;white-space: nowrap;"><span id="currentEnvDisplay" data-value="noEnviron">No Environ </span><span class="icon-arrow-down"></span></a>
+                        <div class="dropdown envsDropdown close">
+                            <ul id="envsList">
+                                <li class="divider"></li>
+                                <li><a onclick="return createNewEnvTab()">Create New Env</a></li>
+                            </ul>                        
+                        </div>
+                    </span>
+                    <span style="position: relative;">
+                        Teams: 
+                        <a onclick="return showDropdown('.teamsDropdown')" style="padding: 3px;background: gray;color: white;border-radius: 2px;display: inline-block;white-space: nowrap;"><span id="currentTeamDisplay"><!--Personal--> </span><span class="icon-arrow-down"></span></a>
+                        <div class="dropdown teamsDropdown close">
+                            <ul id="teamsList">
+                                <li><a onclick="return selectTeam()">Personal</a></li>
+                            </ul>                        
+                        </div>
+                    </span>
+                </div>
+
+                <div class="mainTabs">
+                    <ul id="mainTab">
+                        <!--<li class="mainTab"><a onclick="return requestTab()" class="mainTabName"><b>POST</b> localhost:5000/api/</a><span><a class="mainTabClose">X</a></span></li>
+                        <li class="mainTab"><a class="mainTabName"><b>GET</b> localhost:2000/api/reg</a><span><a class="mainTabClose">X</a></span></li>-->
+                        <!--<li class="mainTabAdd"><a onclick="return addNewTab(event)">+</a></li> -->
+                    </ul>
+                    <a class="mainTabAdd" onclick="return addNewTab(event)">+</a>
+                </div>
+                <div id="tabContainer">
+                </div>
+            </div>            
+		</div>
+    </body>
+    <script>
+        'use strict';
+    </script>
+
+    <!-- Lib/Module scripts -->
+
+    <script src="./js/polyfills/core.min.js"></script>
+    <script src="./js/polyfills/library.min.js"></script>
+    <script src="./js/polyfills/shim.min.js"></script>
+    
+    <script src="./js/libs/codemirror/codemirror.min.js"></script>
+    <script src="./js/libs/codemirror/mode/javascript/javascript.js"></script>
+    <script src="./js/libs/codemirror/mode/shell/shell.js"></script>
+    <script src="./js/libs/codemirror/addon/display/autorefresh.js"></script>
+
+    <script src="./js/libs/axios/axios.min.js"></script>
+    <script src="./js/libs/mustachejs/mustache.min.js"></script>
+    <script src="./js/libs/dexie/dexie.js"></script>
+
+    <!-- Custom scripts -->
+    <script src="./js/utils.js"></script>
+
+    <script src="./js/db/historyDb.js"></script>
+    <script src="./js/db/collectionsDb.js"></script>
+    <script src="./js/db/requestsDb.js"></script>
+    <script src="./js/db/EnvDb.js"></script>
+    <script src="./js/db/MockServerDb.js"></script>
+
+    <script src="./js/auth/authTabs.js"></script>
+    <script src="./js/codegens/codegens.js"></script>
+
+    <script src="./js/body/graphql/graphQL.js"></script>
+    <script src="./js/body/raw/raw.js"></script>
+    <script src="./js/body/form/form.js"></script>
+    <script src="./js/body/body.js"></script>
+    <script src="./js/body/params.js"></script>
+
+    <script src="./js/settings/settings.js"></script>
+    <script src="./js/newTab.js"></script>
+    <script src="./js/script.js"></script>
+    <script src="./js/history.js"></script>
+    <script src="./js/request.js"></script>
+
+    <script src="./js/env/Env.js"></script>
+    <script src="./js/env/parseEnvVars.js"></script>
+
+    <script src="./js/visualizer/Visualizer.js"></script>
+    <script src="./js/mockServer/MockServer.js"></script>
+    <script src="./js/mockServer/MockServerMgmt.js"></script>
+    <script src="./js/prerequestscript/preRequestScript.js"></script>
+    <script src="./js/saveModal.js"></script>
+
+    <script src="./js/collections/editCollection.js"></script>
+    <script src="./js/collections/viewCollection.js"></script>
+    <script src="./js/collections/shareCollection.js"></script> 
+    <script src="./js/collections/exportCollection.js"></script>
+    <script src="./js/collections/addRequestToCollection.js"></script>
+    <script src="./js/collections/importCollection.js"></script>
+    <script src="./js/collections/collections.js"></script>
+
+    <script src="./js/teams.js"></script>
+    <script src="./js/testFunc.js"></script>
+    <script src="./js/auth/auth.js"></script>
+    <script src="./js/Data.js"></script>
+    <script src="./js/startup.js"></script>
+    
+</html>
+

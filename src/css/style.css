@@ -1,0 +1,592 @@
+:root {
+    --mainColor: rgb(221,75,57);
+    --fontFamily: Tahoma;
+}
+
+* {
+    outline: none;
+    list-style: none;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    /* width:100%; */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+
+    margin-bottom: 100px;
+}
+
+header {
+    height: auto/* 50px */;
+    /* background: width; */
+    color: rgb(221,75,57);
+    border-bottom: 2px solid rgb(221, 221, 221);
+
+    display: flex;
+    align-items: center;
+}
+
+nav {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+nav ul {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-end;
+
+    flex-flow: wrap;
+}
+
+nav ul li {
+    margin: 1px;
+}
+
+nav .nav-btn {
+    background: rgb(221,75,57);
+    color: white;
+    padding: 5px 8px;
+    border-radius: 3px;
+    margin: 1px;
+    white-space: nowrap;
+    display: block;
+    cursor: pointer;
+    text-align: center;
+}
+
+header h2 {
+    margin: 0;
+    padding: 0.3em;
+}
+
+input {
+    border: 1px solid rgb(221,75,57);
+
+    padding: 6px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+input:focus {
+    border: 2px solid rgb(221,75,57);
+}
+
+a {
+    cursor: pointer;
+}
+
+.container {
+    display:flex;
+    width: inherit;
+    /* justify-content: center; */
+    margin-top: 5px;
+    align-items: start;		
+}
+
+.divider {
+    height: 0.9px;
+    /* background: #0000003b; */   
+    background: rgb(0, 0, 0, 0.23);
+    margin: 0.2em;
+}
+
+.horiDivider {
+    width: 1px;
+    background: rgb(221, 221, 221);
+    min-height: 100%;
+    height: 100%;
+}
+
+.historyCnt {
+    width: 20%;
+    padding-right: 2px;
+}
+
+.wrapper {
+    width: 700px;
+    width: 80%;
+}
+
+.dropdown {
+    z-index: 999;
+    position: absolute;
+    background: rgb(248, 231, 231);
+    padding: 2px 0;
+
+    border: 1px solid rgb(221, 221, 221);
+    /* box-shadow: 6px 5px 8px 7px rgb(221, 221, 221); */
+
+    top: 100%;
+    left: auto;
+
+    white-space: nowrap;    
+    right: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+}
+
+.right-dropdown {
+    right: unset;
+    left: 0;
+}
+
+.dropdown ul {
+    margin: 0;
+    padding: 0;
+}
+
+.dropdown ul li {
+    color: rgb(221,75,57);
+    cursor: pointer;
+    border-top: 1px solid rgb(221, 221, 221);
+}
+
+.dropdown ul li:hover {
+    background: rgb(221, 221, 221);
+}
+
+.dropdown ul li a {
+    padding: 8px;
+    display: block;
+
+    padding-right: 27px;
+}
+
+button {
+    margin: 0 2px;
+    padding: 3px 27px;
+    border: 0;
+    color: white;
+    border-radius: 3px;    
+    white-space: nowrap;
+
+    background-color: rgb(221,75,57);
+}
+
+button:disabled {
+    /* background: #dd4b3954; */
+    background: rgba(221, 75, 57, 0.33);
+    cursor: not-allowed;
+}
+
+.urlArea {
+    display: flex;
+    margin-bottom: 12px;
+    width: 100%;
+}
+
+.urlArea button {
+    background: rgb(221,75,57);
+    color: white;
+
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.urlArea button:disabled {
+    /* background: #dd4b3954; */
+    background: rgba(221, 75, 57, 0.33);
+    cursor: not-allowed;
+}
+
+.wrapper textarea {
+    width: inherit;
+}
+
+.wrapper button {
+    width: auto;
+}
+
+.historyCnt .tab {
+    width: 100% !important;
+}
+
+.tabs {
+    margin: 0;
+
+    margin-top: 4px;
+
+    /* border-bottom-color: #f4f4f4; */
+    border-bottom-color: rgb(221, 221, 221);
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+
+    border-bottom: 1px solid rgb(221, 221, 221);
+
+    width: 100%;
+}
+
+.tabul {
+    display: flex;
+    padding: 0;
+    margin: 2px 0 1px 0;
+
+    border-bottom: 1px solid rgb(221, 221, 221);
+
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.tabul .tab {
+    /* padding: 3px; */
+    width: auto;
+    cursor: pointer;
+
+    white-space: nowrap;
+}
+
+.tabul .tab a {
+    padding: 10px 15px;
+    box-sizing: border-box;
+    display: block;
+}
+
+.tabul .tab-active {
+    border-bottom: 2px solid rgb(221,75,57);
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+}
+
+.inputBox {
+    height: 50px;
+    display: flex;
+    
+    border: 1px solid rgb(221,75,57);
+    margin-right: 2px;
+    width: 100%;
+    border-radius: 2px;
+}
+
+.method {
+    color: rgb(221,75,57);
+    font-weight: 800;    
+}
+
+.method a {
+    padding: 15px 15px;
+    display: block;
+    box-sizing: border-box;    
+    cursor: pointer;
+}
+
+.methodCnt {
+    border-right: 1px solid rgb(221,75,57);    
+    position: relative;
+}
+
+.inputBox input {
+    border: 0;
+    width: 100%;
+
+    font-size: 18px;
+    padding-left: 4px;
+
+    background-color: rgb(235, 235, 228);
+    color: rgb(1, 1, 1);
+
+    border-radius: unset;
+}
+
+.mainTabs {
+    height: auto;
+    padding: 6px 0;
+    
+    margin: 6px 0;
+    border-bottom: 1px solid rgb(221, 221, 221);
+
+    display: flex;
+}
+
+.mainTabs ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+
+    width: auto;
+    max-width: 90%;
+    overflow-x: scroll;
+
+}
+
+.mainTab {
+    border: 1px solid rgb(221, 221, 221);
+    /*border-top: 2px solid rgb(221,75,57); */
+
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+
+    /* width: 100px; */
+    margin-right: 2px;
+
+    white-space: nowrap;
+    /*overflow: hidden;
+    text-overflow: ellipsis; */
+
+    display: flex;
+    cursor: pointer;
+}
+
+.mainTab .mainTabName {
+    display: block;
+    padding: 5px;
+
+    width: 170px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.mainTabClose {
+    padding: 5px;
+    display: block;
+}
+
+.mainTabAdd {
+    display: block;
+    padding: 7px;    
+    border: 1px solid rgb(221, 221, 221);
+    cursor: pointer;
+}
+
+/*#mainTab {
+    width: 90%;
+    display: flex;
+    overflow-x: scroll;    
+}*/
+
+.mainTabContent {
+    display: none;
+}
+
+.mainTabContentActive {
+    display: block;
+}
+
+.mainTabActive {
+    border-top: 2px solid rgb(221,75,57);
+}
+
+.tab-content {
+    display: none;
+    padding: 12px 0;
+}
+
+.tab-content-active {
+    display: block;
+}
+
+.response > .responseHeader {
+    font-weight: 500;
+    background: rgb(221, 221, 221);
+    padding: 10px 0;
+    box-sizing: border-box;
+    color: gray;
+
+    padding-left: 4px;
+}
+
+table {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid rgb(221, 221, 221);
+    text-align: left;
+}
+
+table input[type="text"] {
+    border: 0;
+}
+
+table button {
+    background: rgb(221,75,57);
+    color: white;
+    border: 0;
+    border-radius: 2px;
+    padding: 4px 16px;
+}
+
+table tr td {
+  border: 1px solid rgb(221, 221, 221);
+}
+
+.responseStats {
+    width: 100%;
+    padding-right: 46px;
+}
+
+.responseStats > div {
+    float: right;
+    padding: 8px 0;
+    display: block;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-group {
+    display: flex;
+    position: relative;
+}
+
+.btn-group button {
+    margin: 0;
+    border-radius: 0;
+}
+
+.btn-group button:nth-child(1) {
+    padding-left: 16px;
+    padding-right: 3px;
+
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+.btn-group button:nth-child(2) {
+    padding-left: 3px;
+    padding-right: 16px;
+
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+
+}
+
+.close {
+    display: none !important;
+}
+
+.responseTab li:last-child {
+    /* width: 100%; */
+    flex-grow: 1;
+}
+
+.responseTab li:last-child div {
+    padding: 0.4em;
+
+    float: right;
+    box-sizing: border-box;
+}
+
+.bg-gray {
+    background: gray;
+}
+
+.bg-red {
+    background-color: red;
+}
+
+.color-white {
+    color: white;
+}
+
+/*
+* border-radius: 3px
+*/
+.bd-rad-3 {
+    border-radius: 3px;
+}
+
+.pd-2 {
+    padding: 2px;
+}
+
+.historyUl {
+    width: 100%;
+}
+
+.historyLi {
+    white-space: nowrap;
+    padding: 11px 0;
+    border-top: 1px solid rgb(221, 221, 221);
+    cursor: pointer;
+}
+
+.historyLi:hover {
+    background-color: rgb(221, 221, 221);
+}
+
+.historyItem {
+    font-weight: 900;
+}
+
+.collectionFolder {
+    white-space: nowrap;
+    padding: 13px 0;
+    border-top: 1px solid rgb(221, 221, 221);
+    cursor: pointer;    
+}
+
+.collectionFolder:hover {
+    background-color: initial;
+}
+
+.headersTr {
+    position: relative;
+}
+
+.historyCntTop {
+    display: none;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    overflow-y: hidden;    
+}
+
+.mobileSideBar {
+    display: none;
+}
+
+.lightWeight {
+    font-weight: 400;
+}
+
+.responseViews .tab {
+    background: rgb(221, 221, 221);
+}
+
+.responseViews .tab:nth-child(1) {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.responseViews .tab:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.previewFrame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 1px solid rgb(221, 221, 221);;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.notif {
+    padding: 15px;    
+    border-radius: 3px;
+    color: white;
+    border: 2px solid gray;
+}
+
+.notif-success {
+    border: 2px solid rgb(0, 128, 0);
+    background: green;
+}
+
+.notif-danger {
+    border: 2px solid rgb(111, 0, 0);
+    background: red;
+}
