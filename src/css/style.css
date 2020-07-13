@@ -573,20 +573,3 @@ table tr td {
     border-radius: 3px;
     box-sizing: border-box;
 }
-
-.notif {
-    padding: 15px;    
-    border-radius: 3px;
-    color: white;
-    border: 2px solid gray;
-}
-
-.notif-success {
-    border: 2px solid rgb(0, 128, 0);
-    background: green;
-}
-
-.notif-danger {
-    border: 2px solid rgb(111, 0, 0);
-    background: red;
-}

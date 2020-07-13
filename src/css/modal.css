@@ -9,6 +9,8 @@
 
     display: flex;
     justify-content: center;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .modal-backdrop {
@@ -35,10 +37,28 @@
     transform: translate(-50%, -50%); */
 }
 
+.modal-width-800 {
+    width: 800px;
+}
+
+@media(max-width: 800px) {
+    .modal-body {
+        width: 90%;
+    }    
+    
+    .modal-width-800 {
+        width: 90%;
+    }
+}
+
 @media(max-width: 500px) {
     .modal-body {
         width: 90%;
     }    
+    
+    .modal-width-800 {
+        width: 90%;
+    }
 }
 
 .modal input {

@@ -1,3 +1,28 @@
+function displayNotif(message, opts) {
+    var p = document.createElement("p")
+    p.classList.add("notif")
+    if(opts) {
+        p.classList.add("notif-" + opts.type || "info")
+    } else {
+        p.classList.add("notif-info")
+    }
+    p.classList.add("notif-bubble")
+    p.innerText = message
+    /*
+    if(dispatchNotif.currentNotif) {
+        document.body.removeChild(dispatchNotif.currentNotif)
+        dispatchNotif.currentNotif = p
+    } else {
+
+    }*/
+    document.body.appendChild(p)
+    setTimeout(() => {
+        document.body.removeChild(p)
+        // delete dispatchNotif.currentNotif
+    }, 1000)
+    // <p id="createMockServerNotif" class="notif close"></p>
+}
+
 function showDropdown(className) {
     var node = document.querySelector(className)
 
@@ -151,6 +176,15 @@ function closeActiveModals() {
 
 function getFromWindow(name) {
     return window[name]
+}
+
+/**
+ * 
+ * @param {*} tabId - The current tab
+ * @param {*} editor - The editor to return
+ */
+function getCodeEditor(tabId, editor) {
+    return currentEditors[tabId][editor] || false
 }
 
 function setCodeEditor(node, opts) {

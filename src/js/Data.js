@@ -24,7 +24,7 @@ var codeGenStrategies = {
 var teams = []
 var collections = []
 var postly = {
-    describe
+    // describe
 }
 
 var dropdownsActive = []

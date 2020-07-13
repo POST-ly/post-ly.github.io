@@ -104,28 +104,27 @@ function editCollectionModal(colId) {
     // setTabsInAuthTab(tabId)
 
     // set collection editors
-    setCollectionEditors()
-
-    // populate collection views
+    setCollectionEditors(colId)
 
     // set collection name
     setCollectionName(colId)
 }
 
-function setCollectionEditors() {
+function setCollectionEditors(colId) {
+    var col = getCollection(colId)
+
     var testEditorNode = document.querySelector(".collectionTestEditor")
     var prerequestEditorNode = document.querySelector(".collectionPreRequestEditor")
 
     if(!currentEditors["collectionTestEditor"]) {
         currentEditors["collectionTestEditor"] = setCodeEditor(testEditorNode, {
-            value: "// Collection tests goes here. (JavaScript)",
+            value: col.tests ? col.tests : "// Collection tests goes here. (JavaScript)",
             lineNumbers: true, 
             tabSize: 2,
             mode: {
                 name: "javascript",
                 json: true
             },
-            readOnly: true,
             lineWrapping: true,
             theme: "default",
             autoRefresh: true,
@@ -138,14 +137,13 @@ function setCollectionEditors() {
 
     if(!currentEditors["collectionPreRequestEditor"]) {
         currentEditors["collectionPreRequestEditor"] = setCodeEditor(prerequestEditorNode, {
-            value: "// Collection Pre-request script goes here. (JavaScript)",
+            value: col.prerequest ? col.prerequest : "// Collection Pre-request script goes here. (JavaScript)",
             lineNumbers: true, 
             tabSize: 2,
             mode: {
                 name: "javascript",
                 json: true
             },
-            readOnly: true,
             lineWrapping: true,
             theme: "default",
             autoRefresh: true,
@@ -212,6 +210,9 @@ function addCollectionVar(evt, colId) {
 
 function addCollectionVars(colId) {
     var collection = getCollection(colId)
+    var listVarsNode = document.querySelector(".listToAddCollectionVars")
+    listVarsNode.innerHTML = ""
+
     if(collection.variables) {
         for (var index = 0; index < collection.variables.length; index++) {
             var _var = collection.variables[index];
@@ -240,8 +241,7 @@ function addCollectionVars(colId) {
                     </tbody>
                 </table>
             `
-            document.querySelector(".listToAddCollectionVars")
-                .appendChild(li)                
+            listVarsNode.appendChild(li)
         }
     }
 }
@@ -257,6 +257,12 @@ function updateCollectionn(evt, colId) {
     log(colId)   
     var col = getCollection(colId)
     log(col)
+
+    // save the test script
+    col.tests = currentEditors["collectionTestEditor"].getValue()
+    // save the pre-request script
+    col.prerequest = currentEditors["collectionPreRequestEditor"].getValue()
+
     if(checkTeamIsPersonal()) {
 
         updateCollection(col, (done, res) => {

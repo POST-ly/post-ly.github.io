@@ -18,14 +18,7 @@ function send(event, tabId) {
     var url = document.querySelector(`.${tabId}UrlInput`).value
 
     url = parseVarsAndReplace(url)
-
-    if(url.startsWith("localhost:")) {
-        url = "http://" + url
-    } else if(!url.startsWith("http://")) {
-        if(!url.startsWith("https://")) {
-            url = "https://" + url
-        }
-    }
+    url = processUrl(url)
 
     try {
         // process headers
@@ -81,9 +74,9 @@ function send(event, tabId) {
     }
 
     // create an instance of axios
-    var axiosInst = axios.create(/*{
-        timeout: 10000
-    }*/);
+    var axiosInst = axios.create({
+        timeout: getFromWindow(`${tabId}requestTimeout`).value || 0
+    });
 
     // Set pre-request script
     setPreRequest(axiosInst)
@@ -292,6 +285,10 @@ function setResponseHeaders(headers, tabId) {
         for (var key in headers) {
             responseHeadersHtml += `<tr><td>${key}</td><td>${headers[key]}</td></tr>`
         }
+
+        // Set response headers to postly
+        postly.headers = headers
+
         var responseHeadersHtmlFinal = `
             <table>
                 ${responseHeadersHtml}
@@ -332,7 +329,7 @@ function setResponseStatusText(statusText, tabId) {
         var statusNode = document.querySelector(`.${tabId}responseStatusText`)
         statusNode.innerHTML = statusText
 
-        // set postly responseCode
+        // set postly responseCodeText
         postly.responseCodeText = statusText
 
         statusNode.classList.add("bg-default")
@@ -420,13 +417,12 @@ function processResponseError(e, tabId, event) {
 }
 
 function runTests(res, tabId, event) {
-    testRes = {}
-    if(currentEditors[currentTab]["Tests"]) {
-        var test = currentEditors[currentTab]["Tests"].getValue()
+    if(currentEditors[currentTab]["tests"]) {
+        var testScript = currentEditors[currentTab]["tests"].getValue()
 
-        var funTest = new Function("postly", "expect", test)
-        funTest(postly, expect)
-        displayTest()
+        var testResult = testF(testScript)
+        // log(testResult)
+        displayTest(testResult)
     }
 }
 

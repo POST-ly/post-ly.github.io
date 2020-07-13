@@ -11,7 +11,7 @@ function generateNodejsAxiosCode() {
     var params = postFields.params
     var body = postFields.body
 
-    var code = `var axios = require("axios");\n`
+    var code = `var axios = require("axios");\n\n`
     var configSnippet = "{\n"
     var dataSnippet = ""
 

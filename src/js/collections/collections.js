@@ -62,6 +62,7 @@ function createNewCollection(event) {
 // attachCollectionModal()
 
 function createCollection(event) {
+    var btnNode = event.target
     collectionModalRequestError
 
     var colName = collectionName.value
@@ -71,7 +72,7 @@ function createCollection(event) {
         return
     }
 
-    var btnNode = document.querySelector(`.createCollectionModalBtn`)
+    // var btnNode = document.querySelector(`.createCollectionModalBtn`)
     btnNode.setAttribute("disabled", null)
     btnNode.innerText = "Creating..."
 

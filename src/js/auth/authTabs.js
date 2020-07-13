@@ -159,7 +159,49 @@ function setAsAuth(evt, authName, tabId, type) {
 }
 
 function setAsAuthCollection(evt, authName, tabId) {
+    switch (authName) {
+        case 'Basic':
+            var authBasicUsername =  getFromWindow(`${tabId}authBasicUsername`).value
+            var authBasicPassword =  getFromWindow(`${tabId}authBasicPassword`).value
+            postData[currentTab].authorization = {
+                type: "Basic",
+                password: authBasicPassword,
+                username: authBasicUsername
+            }
+            break;
+        case 'Bearer':
+            var authBearerToken = getFromWindow(`${currentTab}authBearerToken`).value
+            postData[currentTab].authorization = {
+                type: "Bearer",
+                token: authBearerToken
+            }
+            break;    
 
+        case "APIKey":
+            var auth_key = getFromWindow(`${currentTab}authAPIKey`).value
+            var auth_value = getFromWindow(`${currentTab}authAPIValue`).value
+            var whereToAdd = getFromWindow(`${currentTab}setApiKeyAddToType`).dataset.value
+            postData[currentTab].authorization = {
+                type: "APIKey",
+                auth_key: auth_key,
+                auth_value: auth_value,
+                whereToAdd: whereToAdd
+            } 
+            // postData[currentTab] = 
+        break;
+    
+        default:
+            break;
+    }
+
+    // check if icon-check exist and remove it
+    var nodeExist = document.querySelector(`.${currentTab}AuthTabCheck.icon-check`)
+    if(nodeExist) {
+        nodeExist.parentNode.removeChild(nodeExist)
+    }
+    // set this 
+    document.querySelector(`.${currentTab}AuthTab.tab-active`)
+        .innerHTML += `<span class="${currentTab}AuthTabCheck icon-check" style="padding-right: 8px; color: rgb(221,75,57); font-weight: 800;" class="icon-check"></span>`
 }
 
 function setAsAuthRequest(evt, authName, tabId) {
@@ -246,12 +288,12 @@ function generateAuthRequest(headers, url, tabId) {
     var auth = ""
     switch (authName) {
         case 'Basic':
-            var basicUsername = postData[currentTab].authorization.username 
-            var basicPassword = postData[currentTab].authorization.password
+            var basicUsername = parseVarsAndReplace(postData[currentTab].authorization.username)
+            var basicPassword = parseVarsAndReplace(postData[currentTab].authorization.password)
             auth = "Basic " + btoa(basicUsername + ":" + basicPassword)
             break;
         case 'Bearer':
-            var bearerToken = postData[currentTab].authorization.token
+            var bearerToken = parseVarsAndReplace(postData[currentTab].authorization.token)
             auth = `Bearer ${bearerToken}`
             break;
         case "Digest":
@@ -280,8 +322,8 @@ function generateAuthRequest(headers, url, tabId) {
 
         case "APIKey":
             var whereToAdd = postData[currentTab].authorization.whereToAdd
-            var auth_key  = postData[currentTab].authorization.auth_key
-            var auth_value = postData[currentTab].authorization.auth_value
+            var auth_key  = parseVarsAndReplace(postData[currentTab].authorization.auth_key)
+            var auth_value = parseVarsAndReplace(postData[currentTab].authorization.auth_value)
             auth = ""
             
             switch (whereToAdd) {

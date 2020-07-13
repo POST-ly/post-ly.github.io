@@ -147,30 +147,60 @@ function postDataTabHandler(evt) {
         case "tests":
             // check Tests has been set for this tab
             if(!currentEditors[currentTab][tabName]) {
+                var value = "// Write your tests in JavaScript here.\n"
+                if(postData[currentTab].tests) {
+                    value = postData[currentTab].tests
+                }
                 currentEditors[currentTab][tabName] = setCodeEditor(document.getElementById(`${currentTab}postDataCntTabContentTestsEditor`), {
-                    value: "// Write your tests in JavaScript here.\n",
+                    value: value,
                     lineNumbers: true, 
                     tabSize: 2,
                     mode: {
                         name: "javascript"
                     },
                     lineWrapping: true,
-                    theme: "default"        
+                    theme: "default",
+                    autoRefresh: true
                 })
+                if(postData[currentTab].tests) {
+                    currentEditors[currentTab][tabName].testSet = true
+                }
+            } else {
+                var testScript = postData[currentTab].tests || "// Write your tests in JavaScript here.\n"
+                var testEditor = getCodeEditor(currentTab, "tests")
+                if(!testEditor.testSet) {
+                    testEditor.testSet = true
+                    testEditor.setValue(testScript)
+                }
             }
             break;
         case "prerequest":
             if(!currentEditors[currentTab][tabName]) {
+                var value = "// Pre-request script(JavaScript) goes here.\n"
+                if(postData[currentTab].prerequest) {
+                    value = postData[currentTab].prerequest
+                }
                 currentEditors[currentTab][tabName] = setCodeEditor(document.getElementById(`${currentTab}postDataCntTabContentPreRequestScriptEditor`), {
-                    value: "// Pre-request script(JavaScript) goes here.\n",
+                    value: value,
                     lineNumbers: true, 
                     tabSize: 2,
                     mode: {
                         name: "javascript"
                     },
                     lineWrapping: true,
-                    theme: "default"        
+                    theme: "default",
+                    autoRefresh: true
                 })
+                if(postData[currentTab].prerequest) {
+                    currentEditors[currentTab][tabName].prerequestSet = true
+                }
+            } else {
+                var prerequestScript = postData[currentTab].prerequest || "// Pre-request script(JavaScript) goes here.\n"
+                var prerequestEditor = getCodeEditor(currentTab, "prerequest")
+                if(!prerequestEditor.prerequestSet) {
+                    prerequestEditor.prerequestSet = true
+                    prerequestEditor.setValue(prerequestScript)
+                }
             }
         break;
         case "previewrequest":
@@ -188,22 +218,38 @@ function postDataTabHandler(evt) {
                     name: "javascript"
                 },
                 lineWrapping: true,
-                theme: "default"        
+                theme: "default",
+                autoRefresh: true
             })
         }
         break;
         case "visualizer":
             if(!currentEditors[currentTab][tabName]) {
+                var value = "// Write your Visualizer code here. \n"
+                if(postData[currentTab].visualizer) {
+                    value = postData[currentTab].visualizer
+                }
                 currentEditors[currentTab][tabName] = setCodeEditor(document.getElementById(`${currentTab}postDataCntTabContentVisualizerEditor`), {
-                    value: "// Write your Visualizer code here. \n",
+                    value: value,
                     lineNumbers: true, 
                     tabSize: 2,
                     mode: {
                         name: "javascript"
                     },
                     lineWrapping: true,
-                    theme: "default"        
+                    theme: "default",
+                    autoRefresh: true
                 })
+                if(postData[currentTab].visualizer) {
+                    currentEditors[currentTab][tabName].visualizerSet = true
+                }
+            } else {
+                var visualizerScript = postData[currentTab].visualizer || "// Write your Visualizer code here. \n"
+                var visualizerEditor = getCodeEditor(currentTab, "visualizer")
+                if(!visualizerEditor.visualizerSet) {
+                    visualizerEditor.visualizerSet = true
+                    visualizerEditor.setValue(visualizerScript)
+                }
             }
             break;
         default:
@@ -292,7 +338,17 @@ function createNewReqTab(evt, tabId, data) {
             if(!postData[currentTab].headers)
                 postData[currentTab]["headers"] = []
 
-            // TODO: save tests and pre-request scripts
+            // TODO: set visualizer, tests and pre-request scripts
+            if(postData[currentTab].tests) {
+                // getCodeEditor(currentTab) = postData[currentTab].tests
+            }
+            // ${tabId}postDataCntTabContentVisualizerEditor
+            // ${tabId}postDataCntTabContentPreRequestScriptEditor
+            // ${tabId}postDataCntTabContentTestsEditor
+            
+            // TODO: set settings
+            getFromWindow(`${tabId}requestTimeout`).value = postData.timeout || 0
+            getFromWindow(`${tabId}noOfRequestRetries`).value = postData.retries || 0
             
             // set url
             document.querySelector(`.${tabId}UrlInput`).value = data.url
@@ -362,6 +418,20 @@ function saveRequest(tabId, openModal) {
         postData[tabId].url = document.querySelector(`.${currentTab}UrlInput`).value
         postData[tabId].teamId = currentTeam.id
 
+        // collection test, pre-request script, and visualizer
+        var testsEditor = getCodeEditor(tabId, "tests")
+        var prerequestEditor = getCodeEditor(tabId, "prerequest")
+        var visualizerEditor = getCodeEditor(tabId, "visualizer")
+        if(testsEditor) {
+            postData[tabId].tests = testsEditor.getValue()
+        }
+        if(prerequestEditor) {
+            postData[tabId].prerequest = prerequestEditor.getValue()
+        }
+        if(visualizerEditor) {
+            postData[tabId].visualizer = visualizerEditor.getValue()
+        }
+
         if(!postData[currentTab].requestId) {
             postData[currentTab].requestId = "requestId" + Date.now()
         }
@@ -418,6 +488,7 @@ function saveRequest(tabId, openModal) {
 }
 
 function saveRequestUrlName(evt) {
+    var tabId = currentTab
     var requestName = requestUrlName.value
     if(requestName.length <= 0) {
         modalRequestError.innerHTML = "Please, enter a request name."
@@ -435,6 +506,20 @@ function saveRequestUrlName(evt) {
 
     postData[currentTab]["teamId"] = currentTeam.id
     postData[currentTab]["name"] = requestName
+
+    // collection test, pre-request script, and visualizer
+    var testsEditor = getCodeEditor(tabId, "tests")
+    var prerequestEditor = getCodeEditor(tabId, "prerequest")
+    var visualizerEditor = getCodeEditor(tabId, "visualizer")
+    if(testsEditor) {
+        postData[tabId].tests = testsEditor.getValue()
+    }
+    if(prerequestEditor) {
+        postData[tabId].prerequest = prerequestEditor.getValue()
+    }
+    if(visualizerEditor) {
+        postData[tabId].visualizer = visualizerEditor.getValue()
+    }
 
     postData[currentTab].url = document.querySelector(`.${currentTab}UrlInput`).value
 

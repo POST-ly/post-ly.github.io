@@ -58,7 +58,7 @@ function createNewTab(tabId) {
                                 </ul>
                                 <div>
                                     <div data-name="authorization" class="tab-content ${tabId}postDataCntTabContent tab-content-active Authorization">
-                                        ${createAuthTabs(tabId)}
+                                        ${createAuthTabs(tabId, "Request")}
                                     </div>
                                     <div data-name="headers" class="tab-content ${tabId}postDataCntTabContent Headers table-responsive">
                                         <table>
@@ -183,7 +183,16 @@ function createNewTab(tabId) {
                                                 </div>
                                             </div>
                                             <div data-tab="${tabId}moreViews:settings" class="${tabId}moreViews tab-content">
-                                                Settings: Not Yet Implemented
+                                                <div>
+                                                    <div style="padding: 10px 0;border-bottom: 1px solid rgb(221, 221, 221);">
+                                                        <div style="margin: 4px 0;">No of request retries:</div>
+                                                        <input id="${tabId}noOfRequestRetries" type="text" placeholder="" />
+                                                    </div>
+                                                    <div style="padding: 10px 0;border-bottom: 1px solid rgb(221, 221, 221);">
+                                                        <div style="margin: 4px 0;">Request Timeout(ms):</div>
+                                                        <input id="${tabId}requestTimeout" type="text" />
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
