@@ -172,19 +172,19 @@ function createNewTab(tabId) {
                                         </div>
                                         <div>
                                             <div data-tab="${tabId}moreViews:options" class="${tabId}moreViews tab-content tab-content-active">
-                                                <div style="padding: 10px 0;border: 1px solid rgb(221, 221, 221);">
+                                                <div style="padding: 10px 0;border-bottom: 1px solid rgb(221, 221, 221);">
                                                     <p style="margin: 9px 0;font-size: 15px;color:rgb(101, 101, 101);"><span style="padding-right: 2px;" class="icon-question"></span>
                                                         This option will download the response of the request when successfull.
                                                     </p>
                                                     <input id="${tabId}downloadResponseOpt" type="checkbox" onchange="return setOptions(event, 'downloadres')" /> Download response
                                                 </div>
-                                                <div style="padding: 10px 0;border: 1px solid rgb(221, 221, 221);">
+                                                <div style="padding: 10px 0;border-bottom: 1px solid rgb(221, 221, 221);">
                                                     <p style="margin: 9px 0;font-size: 15px;color:rgb(101, 101, 101);"><span style="padding-right: 2px;" class="icon-question"></span>
                                                         This will use the POSTly proxy server to proxy your request.
                                                     </p>
                                                     <input id="${tabId}useProxyOption" type="checkbox" onchange="return setOptions(event, 'useproxy')" /> Use proxy
                                                 </div>
-                                                <div style="padding: 10px 0;border: 1px solid rgb(221, 221, 221);">
+                                                <div style="padding: 10px 0;border-bottom: 1px solid rgb(221, 221, 221);">
                                                     <p style="margin: 9px 0;font-size: 15px;color:rgb(101, 101, 101);"><span style="padding-right: 2px;" class="icon-question"></span>
                                                         This option will preview Image and Video response.
                                                     </p>

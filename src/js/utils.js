@@ -7,20 +7,34 @@ function displayNotif(message, opts) {
         p.classList.add("notif-info")
     }
     p.classList.add("notif-bubble")
-    p.innerText = message
-    /*
-    if(dispatchNotif.currentNotif) {
-        document.body.removeChild(dispatchNotif.currentNotif)
-        dispatchNotif.currentNotif = p
-    } else {
 
-    }*/
-    document.body.appendChild(p)
-    setTimeout(() => {
+    var h4 = document.createElement("h4")
+    h4.style.display = "flex"
+    h4.style.justifyContent = "space-between"
+    h4.style.margin = "2px 0"
+    h4.appendChild(document.createTextNode("Heads up!"))
+
+    var span = document.createElement("span")
+    span.classList.add("icon-close")
+    span.addEventListener("click", (e) => {
         document.body.removeChild(p)
-        // delete dispatchNotif.currentNotif
-    }, 1000)
-    // <p id="createMockServerNotif" class="notif close"></p>
+    })
+
+    h4.appendChild(span)
+    p.appendChild(h4)
+    p.appendChild(document.createTextNode(message))
+
+    if(displayNotif.currentNotif) {
+        clearTimeout(displayNotif.currentNotif.timeout)
+        document.body.removeChild(displayNotif.currentNotif.node)
+        delete displayNotif.currentNotif
+    }
+    document.body.appendChild(p)
+    var timeout = setTimeout(() => {
+        document.body.removeChild(p)
+        delete displayNotif.currentNotif
+    }, 1500)
+    displayNotif.currentNotif = {timeout, node: p}
 }
 
 function showDropdown(className) {

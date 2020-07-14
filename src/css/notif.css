@@ -3,7 +3,10 @@
     border-radius: 3px;
     color: white;
     border: 1px solid gray;
-    transition: display 1s ease 1s;
+    transition: display 1s ease-in 1s;
+
+    margin-left: 6px;
+    margin-right: 6px;
 }
 
 .notif-success {
@@ -26,4 +29,16 @@
     top: 0;
     left: 50%;
     width: auto;
+}
+
+@media(max-width: 800px) {
+    .notif-bubble {
+        left: 1%;
+    }
+}
+
+@media(max-width: 500px) {
+    .notif-bubble {
+        left: 1%;
+    }
 }

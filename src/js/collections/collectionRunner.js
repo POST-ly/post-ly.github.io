@@ -61,7 +61,7 @@ function runnerHtml(tabId, colId) {
             var req = col.requests[index];
             reqsHtml += `
                 <li style="border-bottom: 1px solid rgb(221, 221, 221);padding: 10px 3px;">
-                    <span><input type="checkbox" checked /></span>
+                    <span><input type="checkbox" checked onchange="return toggleReqs()" /></span>
                     <span><b>${req.methodType}</b></span>
                     <span>${req.name}</span>
                 </li>
@@ -71,7 +71,7 @@ function runnerHtml(tabId, colId) {
 
     return `
         <div style="display: flex; justify-content: space-between;">
-            <div style="flex-grow:1;">
+            <div style="flex-grow:1; margin: 0 2px; border: 1px solid rgb(221, 221, 221); padding: 5px;">
                 <!-- settings for col run -->
                     <div style="margin: 9px 0; white-space: nowrap;">
                         <span>Env:</span>
@@ -96,9 +96,10 @@ function runnerHtml(tabId, colId) {
                         <button style="padding: 12px 26px;font-size: 0.9em;font-weight: 700;" onclick="return runCollection(event, '${tabId}', '${colId}')" class="bg-default color-white pad-6 pad-left-12 pad-right-12">Run</button>
                     </div>
             </div>
-            <div style="flex-grow:1;">
+            <div style="flex-grow:1; margin: 0 2px;">
+                <h4 class="lightWeight" style="margin: 2px 0;padding-bottom: 5px;">Run Order</h4>
                 <!-- list requests collection -->
-                <ul>
+                <ul style="border: 1px solid rgb(221, 221, 221);">
                     ${reqsHtml}
                 </ul>
             </div>
@@ -205,14 +206,16 @@ function runCollection(event, tabId, colId) {
         // run pre-request in collection.
 
         // generate auth for collection
-        req = generateAuthCollection(req, col.authorization)
+        if(col.authorization)
+            req = generateAuthCollection(req, col.authorization)
+
         makeRequest(req, false, (res) => {
             // req["__response"] = res
 
             // set postly api and run collection tests
             var postlyApi = setPostlyAPI(res)
             var testRes = runCollectionTests(col.tests, postlyApi)
-            log(testRes)
+            // log(testRes)
             // currentIter.push(req)
             currentIter.push({
                 "testsResult": testRes,
