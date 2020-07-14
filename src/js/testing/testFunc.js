@@ -16,7 +16,7 @@ describe("Test for Response Method", () => {
 /**
  * 
  */
-function testF(testScript) {
+function testF(testScript, api) {
     // log("testF")
 
     var testRes = {}
@@ -70,7 +70,7 @@ function testF(testScript) {
         }
     }
     var funTest = new Function("describe", "expect", "postly", testScript)
-    funTest(describe, expect, postly)
+    funTest(describe, expect, api)
 
     return testRes
 }

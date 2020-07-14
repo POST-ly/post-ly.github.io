@@ -40,7 +40,7 @@ function send(event, tabId) {
         // process params. /:3000?q=90&s=nnamdi
         if(postData[tabId].params) {
             if(postData[tabId].params.length > 0) {
-                url = buildParams(postData[tabId].params, url)
+                url = buildParamsToUrl(postData[tabId].params, url)
                 /*
                 url += "?"
                 postData[tabId].params.forEach(param => {
@@ -112,7 +112,9 @@ function send(event, tabId) {
         method: METHOD.toLowerCase(),
         url: url,
         data: bdy,
-        headers
+        headers,
+        maxRedirects: getFromWindow(`${tabId}maxRedirects`).value || 0,
+        withCredentials: postData.withcredentials || false
     }).then( res => {
         processResponse(res, tabId, event)
     }).catch(e => {
@@ -287,7 +289,7 @@ function setResponseHeaders(headers, tabId) {
         }
 
         // Set response headers to postly
-        postly.headers = headers
+        // postly.headers = headers
 
         var responseHeadersHtmlFinal = `
             <table>
@@ -306,7 +308,7 @@ function setResponseStatus(status, tabId) {
         var bgColor
 
         // set postly responseCode
-        postly.responseCode = status
+        // postly.responseCode = status
 
         status = status.toString()
 
@@ -330,7 +332,7 @@ function setResponseStatusText(statusText, tabId) {
         statusNode.innerHTML = statusText
 
         // set postly responseCodeText
-        postly.responseCodeText = statusText
+        // postly.responseCodeText = statusText
 
         statusNode.classList.add("bg-default")
         statusNode.classList.remove("close")
@@ -350,14 +352,17 @@ function processResponse(res, tabId, event) {
 
         var data = res.data
         // set postly data
+        /*
         postly.config = res
         postly.response = data
+        */
 
         setDisplay(data, res, false)
         if(postData[currentTab].options && postData[currentTab].options.downloadres) {
             downloadResponse(data, res)
         }
-        runTests(res, tabId, event)
+        var api = setPostlyAPI(res)
+        runTests(res, tabId, event, api)
         runVisualizer(res, tabId, event)
 
         var dom = event.target
@@ -385,6 +390,8 @@ function processResponseError(e, tabId, event) {
     setResponseStatusText(e.statusText, tabId)
 
     setDisplay(e.response, e, true)
+    var api = setPostlyAPI(e)
+    runTests(e, tabId, event, api)
  }
 
  function toggleOpt(event, id, opt, optKey, optValue) {
@@ -416,11 +423,11 @@ function processResponseError(e, tabId, event) {
     }
 }
 
-function runTests(res, tabId, event) {
+function runTests(res, tabId, event, api) {
     if(currentEditors[currentTab]["tests"]) {
         var testScript = currentEditors[currentTab]["tests"].getValue()
 
-        var testResult = testF(testScript)
+        var testResult = testF(testScript, api)
         // log(testResult)
         displayTest(testResult)
     }

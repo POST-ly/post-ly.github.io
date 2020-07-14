@@ -39,7 +39,7 @@ function makeRequest(req, mockCall, cb) {
     var body = bodyBuilder(req.body)
     var headers = req.headers
     var method = req.methodType.toLowerCase()
-    var params = req.params
+    var params = buildParams(req.params)
     
     // create an instance of axios
     var axiosInst = axios.create(/*{
@@ -54,7 +54,7 @@ function makeRequest(req, mockCall, cb) {
     }, function (error) {
         // error.response - error response
         // error.request - instance of XMLHttpRequest in the browser and an instance of
-      // http.ClientRequest in node.js
+        // http.ClientRequest in node.js
         cb(error)
         return Promise.reject(error);
     });
@@ -66,28 +66,9 @@ function makeRequest(req, mockCall, cb) {
         method,
         url,
         data: body,
-        headers
+        headers,
+        params
     }).then( res => {
-
-        var data = res.data
-        var headers = res.headers
-        var status = res.status
-        var statusText = res.statusText
-
-        // set postly data
-        postly.config = res
-
-        postly.response = data
-
-        // set postly responseCodeText
-        postly.responseCodeText = statusText
-
-        // set postly responseCode
-        postly.responseCode = status
-
-        // Set response headers to postly
-        postly.headers = headers
-
         cb(res)
     }).catch(e => {
         // process error response

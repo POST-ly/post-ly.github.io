@@ -173,24 +173,52 @@ function createNewTab(tabId) {
                                         <div>
                                             <div data-tab="${tabId}moreViews:options" class="${tabId}moreViews tab-content tab-content-active">
                                                 <div style="padding: 10px 0;border: 1px solid rgb(221, 221, 221);">
+                                                    <p style="margin: 9px 0;font-size: 15px;color:rgb(101, 101, 101);"><span style="padding-right: 2px;" class="icon-question"></span>
+                                                        This option will download the response of the request when successfull.
+                                                    </p>
                                                     <input id="${tabId}downloadResponseOpt" type="checkbox" onchange="return setOptions(event, 'downloadres')" /> Download response
                                                 </div>
                                                 <div style="padding: 10px 0;border: 1px solid rgb(221, 221, 221);">
+                                                    <p style="margin: 9px 0;font-size: 15px;color:rgb(101, 101, 101);"><span style="padding-right: 2px;" class="icon-question"></span>
+                                                        This will use the POSTly proxy server to proxy your request.
+                                                    </p>
                                                     <input id="${tabId}useProxyOption" type="checkbox" onchange="return setOptions(event, 'useproxy')" /> Use proxy
                                                 </div>
                                                 <div style="padding: 10px 0;border: 1px solid rgb(221, 221, 221);">
+                                                    <p style="margin: 9px 0;font-size: 15px;color:rgb(101, 101, 101);"><span style="padding-right: 2px;" class="icon-question"></span>
+                                                        This option will preview Image and Video response.
+                                                    </p>
                                                     <input id="${tabId}previewImgVideoOpt" type="checkbox" onchange="return setOptions(event, 'previewimgvideo')" /> Preview(Image/Video)
                                                 </div>
                                             </div>
                                             <div data-tab="${tabId}moreViews:settings" class="${tabId}moreViews tab-content">
                                                 <div>
                                                     <div style="padding: 10px 0;border-bottom: 1px solid rgb(221, 221, 221);">
+                                                        <p style="margin: 9px 0;font-size: 15px;color:rgb(101, 101, 101);"><span style="padding-right: 2px;" class="icon-question"></span>
+                                                            This defines the number of times a request retries itself when it errors out.
+                                                        </p>
                                                         <div style="margin: 4px 0;">No of request retries:</div>
                                                         <input id="${tabId}noOfRequestRetries" type="text" placeholder="" />
                                                     </div>
                                                     <div style="padding: 10px 0;border-bottom: 1px solid rgb(221, 221, 221);">
+                                                        <p style="margin: 9px 0;font-size: 15px;color:rgb(101, 101, 101);"><span style="padding-right: 2px;" class="icon-question"></span>
+                                                            This defines the maximum time for a request to timeout. This is very helful when a server takes long to return a response.
+                                                        </p>
                                                         <div style="margin: 4px 0;">Request Timeout(ms):</div>
                                                         <input id="${tabId}requestTimeout" type="text" />
+                                                    </div>
+                                                    <div style="padding: 10px 0;border-bottom: 1px solid rgb(221, 221, 221);">
+                                                        <p style="margin: 9px 0;font-size: 15px;color:rgb(101, 101, 101);"><span style="padding-right: 2px;" class="icon-question"></span>
+                                                            <strong>Max Redirects</strong> defines the maximum number of redirects to follow in node.js. If set to 0, no redirects will be followed.
+                                                        </p>
+                                                        <div style="margin: 4px 0;">Max Redirects:</div>
+                                                        <input id="${tabId}maxRedirects" type="text" />
+                                                    </div>
+                                                    <div style="padding: 10px 0;border-bottom: 1px solid rgb(221, 221, 221);">
+                                                        <p style="margin: 9px 0;font-size: 15px;color:rgb(101, 101, 101);"><span style="padding-right: 2px;" class="icon-question"></span>
+                                                            <strong>With Credentials</strong> indicates whether or not cross-site Access-Control requests should be made using credentials                                                        
+                                                        </p>
+                                                        <input id="${tabId}withCredentials" type="checkbox" onchange="return setOptions(event, 'withcredentials')" /> With Credentials
                                                     </div>
                                                 </div>
                                             </div>

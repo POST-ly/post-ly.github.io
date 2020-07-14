@@ -163,25 +163,25 @@ function setAsAuthCollection(evt, authName, tabId) {
         case 'Basic':
             var authBasicUsername =  getFromWindow(`${tabId}authBasicUsername`).value
             var authBasicPassword =  getFromWindow(`${tabId}authBasicPassword`).value
-            postData[currentTab].authorization = {
+            setAsAuthCollection.authorization = {
                 type: "Basic",
                 password: authBasicPassword,
                 username: authBasicUsername
             }
             break;
         case 'Bearer':
-            var authBearerToken = getFromWindow(`${currentTab}authBearerToken`).value
-            postData[currentTab].authorization = {
+            var authBearerToken = getFromWindow(`${tabId}authBearerToken`).value
+            setAsAuthCollection.authorization = {
                 type: "Bearer",
                 token: authBearerToken
             }
             break;    
 
         case "APIKey":
-            var auth_key = getFromWindow(`${currentTab}authAPIKey`).value
-            var auth_value = getFromWindow(`${currentTab}authAPIValue`).value
-            var whereToAdd = getFromWindow(`${currentTab}setApiKeyAddToType`).dataset.value
-            postData[currentTab].authorization = {
+            var auth_key = getFromWindow(`${tabId}authAPIKey`).value
+            var auth_value = getFromWindow(`${tabId}authAPIValue`).value
+            var whereToAdd = getFromWindow(`${tabId}setApiKeyAddToType`).dataset.value
+            setAsAuthCollection.authorization = {
                 type: "APIKey",
                 auth_key: auth_key,
                 auth_value: auth_value,
@@ -195,13 +195,13 @@ function setAsAuthCollection(evt, authName, tabId) {
     }
 
     // check if icon-check exist and remove it
-    var nodeExist = document.querySelector(`.${currentTab}AuthTabCheck.icon-check`)
+    var nodeExist = document.querySelector(`.${tabId}AuthTabCheck.icon-check`)
     if(nodeExist) {
         nodeExist.parentNode.removeChild(nodeExist)
     }
     // set this 
-    document.querySelector(`.${currentTab}AuthTab.tab-active`)
-        .innerHTML += `<span class="${currentTab}AuthTabCheck icon-check" style="padding-right: 8px; color: rgb(221,75,57); font-weight: 800;" class="icon-check"></span>`
+    document.querySelector(`.${tabId}AuthTab.tab-active`)
+        .innerHTML += `<span class="${tabId}AuthTabCheck icon-check" style="padding-right: 8px; color: rgb(221,75,57); font-weight: 800;" class="icon-check"></span>`
 }
 
 function setAsAuthRequest(evt, authName, tabId) {
@@ -257,13 +257,13 @@ function setAsAuthRequest(evt, authName, tabId) {
     }
 
     // check if icon-check exist and remove it
-    var nodeExist = document.querySelector(`.${currentTab}AuthTabCheck.icon-check`)
+    var nodeExist = document.querySelector(`.${tabId}AuthTabCheck.icon-check`)
     if(nodeExist) {
         nodeExist.parentNode.removeChild(nodeExist)
     }
     // set this 
-    document.querySelector(`.${currentTab}AuthTab.tab-active`)
-        .innerHTML += `<span class="${currentTab}AuthTabCheck icon-check" style="padding-right: 8px; color: rgb(221,75,57); font-weight: 800;" class="icon-check"></span>`
+    document.querySelector(`.${tabId}AuthTab.tab-active`)
+        .innerHTML += `<span class="${tabId}AuthTabCheck icon-check" style="padding-right: 8px; color: rgb(221,75,57); font-weight: 800;" class="icon-check"></span>`
 }
 
 function setAuthDigestAlgorithm(tabId, algo) {
@@ -279,8 +279,48 @@ function generateAuth(headers, url, tabId, type) {
     generateAuthStrategy["generateAuth" + type](headers, url, tabId)
 }
 
-function generateAuthCollection(headers, url, tabId) {
+function generateAuthCollection(req, authorization) {
+    var authName = authorization.type
+    var auth = ""
+    switch (authName) {
+        case 'Basic':
+            var basicUsername = parseVarsAndReplace(authorization.username)
+            var basicPassword = parseVarsAndReplace(authorization.password)
+            auth = "Basic " + btoa(basicUsername + ":" + basicPassword)
+            req.headers["Authorization"] = auth
+            break;
+        case 'Bearer':
+            var bearerToken = parseVarsAndReplace(authorization.token)
+            auth = `Bearer ${bearerToken}`
+            req.headers["Authorization"] = auth
+            break;
 
+        case "APIKey":
+            var whereToAdd = authorization.whereToAdd
+            var auth_key  = parseVarsAndReplace(authorization.auth_key)
+            var auth_value = parseVarsAndReplace(authorization.auth_value)
+            auth = ""
+            
+            switch (whereToAdd) {
+                case "params":
+                    // check if it has params
+                    req.params.push({
+                        key: auth_key,
+                        value: auth_value
+                    })
+                    break;
+                case "header":
+                    req.headers[auth_key] = auth_value
+                    break;
+                default:
+                    break;
+            }
+            break;
+    
+        default:
+            break;
+    }    
+    return req
 }
 
 function generateAuthRequest(headers, url, tabId) {

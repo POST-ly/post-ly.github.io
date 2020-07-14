@@ -106,6 +106,9 @@ function editCollectionModal(colId) {
     // set collection editors
     setCollectionEditors(colId)
 
+    // set auth
+    setCollectionAuth(colId, tabId)
+
     // set collection name
     setCollectionName(colId)
 }
@@ -263,6 +266,10 @@ function updateCollectionn(evt, colId) {
     // save the pre-request script
     col.prerequest = currentEditors["collectionPreRequestEditor"].getValue()
 
+    // set auth
+    col.authorization = setAsAuthCollection.authorization
+    delete setAsAuthCollection.authorization
+
     if(checkTeamIsPersonal()) {
 
         updateCollection(col, (done, res) => {
@@ -306,4 +313,65 @@ function setCollection(type, colId) {
 
 function setCollectionName(colId) {
     window["editCollectionName"].value = getCollection(colId).name
+}
+
+function setCollectionAuth(colId, tabId) {
+    var col = getCollection(colId)
+    if(col.authorization) {
+        var auth = col.authorization
+        var authName = auth.type
+        switch (authName) {
+            case 'Basic':
+                getFromWindow(`${tabId}authBasicUsername`).value = auth.username
+                getFromWindow(`${tabId}authBasicPassword`).value = auth.password
+                break;
+            case 'Bearer':
+                getFromWindow(`${tabId}authBearerToken`).value = auth.token
+                break;
+            case "Digest":
+            break;
+
+            case "APIKey":
+                getFromWindow(`${tabId}authAPIKey`).value = auth.auth_key
+                getFromWindow(`${tabId}authAPIValue`).value = auth.auth_value
+                getFromWindow(`${tabId}setApiKeyAddToType`).dataset.value = auth.whereToAdd
+                if(auth.whereToAdd == "params") {
+                    getFromWindow(`${tabId}setApiKeyAddToType`).innerHTML = "Query Params"
+                } else {
+                    if(auth.whereToAdd == "header") {
+                        getFromWindow(`${tabId}setApiKeyAddToType`).innerHTML = "Header"
+                    }
+                }
+            break;
+        
+            default:
+                break;
+        }
+
+        // remove the active tab and tab-content
+        document.querySelector(`.${tabId}AuthTab.tab-active`).classList.remove(".tab-active")
+        document.querySelector(`.${tabId}AuthTab.tab-content-active`).classList.remove(".tab-content-active")
+
+        // data-tab="${tabId}AuthTab:apiKey"
+        document.querySelectorAll(`.${tabId}AuthTab.tab`).forEach(n => {
+            if(n.dataset.tab.toLowerCase() == authName.toLowerCase() ) {
+                n.classList.add("tab-active")
+            }
+        })
+        document.querySelectorAll(`.${tabId}AuthTab.tab-content`).forEach(n => {
+            if(n.dataset.tab.toLowerCase() == authName.toLowerCase() ) {
+                n.classList.add("tab-content-active")
+            }
+        })
+
+        // check if icon-check exist and remove it
+        var nodeExist = document.querySelector(`.${tabId}AuthTabCheck.icon-check`)
+        if(nodeExist) {
+            nodeExist.parentNode.removeChild(nodeExist)
+        }
+        // set this 
+        document.querySelector(`.${tabId}AuthTab.tab-active`)
+            .innerHTML += `<span class="${tabId}AuthTabCheck icon-check" style="padding-right: 8px; color: rgb(221,75,57); font-weight: 800;" class="icon-check"></span>`
+        
+    }
 }

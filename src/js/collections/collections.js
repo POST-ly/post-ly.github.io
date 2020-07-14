@@ -184,9 +184,9 @@ function refreshCollectionsIdb() {
                                             
                                             <li><a onclick="return editCollectionModal('${col.collectionId}')"><span style="padding-right: 4px;" class="icon-pencil"></span>Edit</a></li>
 
-                                            <!--
+                                            
                                             <li><a onclick="return viewCollectionModal('${col.collectionId}')"><span style="padding-right: 4px;" class="icon-eye"></span>View</a></li>
-                                            -->
+                                            
                                             <li><a onclick="return exportCollectionModal('${col.collectionId}')"><span style="padding-right: 4px;" class="icon-cloud-download"></span>Export</a></li>
                                             <li><a onclick="return addRequestCollectionModal('${col.collectionId}')"><span style="padding-right: 4px;" class="icon-plus"></span>Add Request</a></li>
                                             <!--

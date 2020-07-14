@@ -122,24 +122,47 @@ function renderRunnerResults(its) {
         `
         for (var index = 0; index < res.length; index++) {
             var r = res[index];
-            var status = r["__response"].status || ""
-            var statusText = r["__response"].statusText || ""
-            var bgC = "" 
+            var status = r["response"].status || ""
+            var statusText = r["response"].statusText || ""
+            var bgC = ""
             if(status) {
                 bgC = status == 200 ? "bg-green" : "bg-default"
             }
 
+            var testHtml = ""
+            if(r.testsResult) {
+                var testRes = r.testsResult
+                // aggregate test results
+                for (var key in testRes) {
+                    var describe = testRes[key];
+                    testHtml += `<div style="padding: 9px 0; background: rgba(221, 221, 221, 0.32);">${describe.name}</div>`
+                    describe.expects.forEach(expect => {
+                        var col = expect.status ? "green" : "rgb(221,75,57)"
+                        testHtml += `
+                            <li style="border-top: 1px solid rgb(221, 221, 221); padding: 8px 0;">
+                                <span><b style="color: ${col}; text-transform: uppercase;">${expect.status}</b> ${expect.name}</span>
+                            </li>
+                        `
+                    })
+                }
+            }
+
             itshtml += `
+                <div>
                     <div style="border-bottom: 1px solid rgb(221, 221, 221);padding: 10px 3px; white-space: nowrap;display: flex;justify-content: space-between;">
                         <div>
-                            <span><b>${r.methodType}</b></span>
-                            <span>${r.name}</span>
+                            <span><b>${r.requests.methodType}</b></span>
+                            <span>${r.requests.name}</span>
                         </div>
                         <div>
                             <span class="${bgC} color-white bd-rad-3 pad-3">${status}</span>
                             <span class="${bgC} color-white bd-rad-3 pad-3">${statusText}</span>
                         </div>
                     </div>
+                        <ul style="padding-left: 16px;">
+                            ${testHtml}
+                        </ul>
+                </div>
             `
         }
     }
@@ -179,9 +202,24 @@ function runCollection(event, tabId, colId) {
 
     function runRequests() {
         var req = reqs[index]
+        // run pre-request in collection.
+
+        // generate auth for collection
+        req = generateAuthCollection(req, col.authorization)
         makeRequest(req, false, (res) => {
-            req["__response"] = res
-            currentIter.push(req)
+            // req["__response"] = res
+
+            // set postly api and run collection tests
+            var postlyApi = setPostlyAPI(res)
+            var testRes = runCollectionTests(col.tests, postlyApi)
+            log(testRes)
+            // currentIter.push(req)
+            currentIter.push({
+                "testsResult": testRes,
+                "response": res,
+                "requests": req
+            })
+
             if(index == (reqs.length - 1)) {
                 runnerRes.push(currentIter)
                 currentIter = []
@@ -201,11 +239,40 @@ function runCollection(event, tabId, colId) {
             targ.removeAttribute("disabled", null)
             targ.innerText = "Run"
             displayNotif("Done running colections", {type: "success"})
-            log("Done running colections:",runnerRes)
+            // log("Done running colections:",runnerRes)
             renderRunnerResults(runnerRes, tabId, colId)
         } else {
             iterations--
             runRequests()
         }
     }
+}
+
+function runCollectionTests(tests, api) {
+    var testResult = testF(tests, api)
+    return testResult
+}
+
+function setPostlyAPI(res) {
+    var _postly = {}
+    var data = res.data
+    var headers = res.headers
+    var status = res.status
+    var statusText = res.statusText
+
+    // set postly data
+    _postly.config = res
+
+    _postly.response = data
+
+    // set postly responseCodeText
+    _postly.responseCodeText = statusText
+
+    // set postly responseCode
+    _postly.responseCode = status
+
+    // Set response headers to postly
+    _postly.headers = headers
+
+    return _postly
 }
