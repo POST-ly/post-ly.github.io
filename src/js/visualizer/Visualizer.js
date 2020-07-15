@@ -43,17 +43,21 @@ postly.visualizer.setTemplate(template, {response: postly.response})
  * @param {*} template 
  */
 function setTemplateFn(template, data) {
-        var output = Mustache.render(template, data)
+        var output = renderTemplate(template, data)/*Mustache.render(template, data) */
         var iFram = getFromWindow(`${currentTab}responseVisualizerPreviewIframe`).contentWindow.document
         iFram.open()
         iFram.writeln(output)
         iFram.close()
 }
 
-function runVisualizer(res, tabId, evt) {
+function renderTemplate(template, data) {
+    return Mustache.render(template, data)    
+}
+
+function runVisualizer(res, tabId, api) {
     if (currentEditors[tabId]["visualizer"]) {
         var visualizerCode = currentEditors[tabId]["visualizer"].getValue()        
-        new Function("postly", visualizerCode)(postly)
+        new Function("postly", visualizerCode)(api)
     }
 }
 

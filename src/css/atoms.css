@@ -10,6 +10,10 @@
     background-color: gray;
 }
 
+.color-default {
+    color: rgb(221,75,57);
+}
+
 .color-green {
     color: green;
 }

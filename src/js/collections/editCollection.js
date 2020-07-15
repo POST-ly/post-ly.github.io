@@ -2,7 +2,7 @@ function editCollectionModal(colId) {
     var tabId = "editCollection" + Date.now()
     var editCollectionModalHtmlStr = `
         <div class="modal-backdrop editCollectionModalBackdrop"></div>
-        <div class="modal-body">
+        <div class="modal-body modal-width-800">
             <div class="modal-head" style="">
                 <h4 style="padding: 0;margin: 0;">Edit a Collection</h4>
                 <div><span onclick="return closeActiveModals(event)" class="icon-close" style="padding: 10px 9px;padding-right: 1px;"></span></div>
@@ -31,7 +31,7 @@ function editCollectionModal(colId) {
                                     </div>
                                     <div data-tab="${tabId}collectionTab:collectiontests" data-name="collectiontests" class="tab-content ${tabId}collectionTab">
                                         <div>
-                                            <p style="margin: 9px 0;font-size: 15px;color:rgb(101, 101, 101);"><span style="padding-right: 2px;" class="icon-question"></span>The tests here runs after each request in this colection.</p>
+                                            <p style="margin: 9px 0;font-size: 15px;color:rgb(101, 101, 101);"><span style="padding-right: 2px;" class="icon-question"></span>The tests here runs after each request in this collection.</p>
                                         </div>
                                         <div style="border: 1px solid rgb(221, 221, 221);" class="collectionTestEditor"></div>
                                     </div>                     
@@ -272,7 +272,7 @@ function updateCollectionn(evt, colId) {
 
     if(checkTeamIsPersonal()) {
 
-        updateCollection(col, (done, res) => {
+        updateCollectionIdb(col, (done, res) => {
             if(done) {
 
             }

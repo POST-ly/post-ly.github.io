@@ -5,7 +5,7 @@ function exportCollectionModal(colId) {
 
     var exportCollectionModalHtmlStr = `
         <div class="modal-backdrop exportCollectionModalBackdrop"></div>
-        <div class="modal-body">
+        <div class="modal-body modal-width-800">
             <div class="modal-head" style="">
                 <h4 style="padding: 0;margin: 0;">Export Collection</h4>
                 <div><span onclick="return closeActiveModals(event)" class="icon-close" style="padding: 10px 9px;padding-right: 1px;"></span></div>

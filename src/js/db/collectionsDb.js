@@ -27,7 +27,7 @@ function getAllCollection(cb) {
     // log("Exiting:", collections)
 }
 
-function getCollection(colId, cb) {
+function getCollectionIdb(colId, cb) {
     postly.collectionsDb.collections.get(colId, function(col) {
         if(col) {
             return cb(true, col)

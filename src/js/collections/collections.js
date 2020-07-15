@@ -389,7 +389,7 @@ function renameCollectionModal(colId) {
                 </div>
                 <div class="modal-footer">
                     <button onclick="return closeActiveModals(event)" class="createCollectionModalBtn bg-gray color-white pad-6 pad-left-12 pad-right-12">Cancel</button>
-                    <button onclick="return renameCollection('${colId}')" class="createCollectionModalBtn bg-default color-white pad-6 pad-left-12 pad-right-12">Rename</button>
+                    <button onclick="return renameCollection(event, '${colId}')" class="createCollectionModalBtn bg-default color-white pad-6 pad-left-12 pad-right-12">Rename</button>
                 </div>
             </div>
 
@@ -413,8 +413,12 @@ function renameCollectionModal(colId) {
     })
 }
 
-function renameCollection(colId) {
+function renameCollection(evt, colId) {
  // log(colId)
+ var targ = evt.target
+ targ.setAttribute("disabled", true)
+ targ.innerText = "Renaming..."
+
  var colName = renameCollectionName.value
 
  if(colName.length <= 0) {
@@ -423,13 +427,26 @@ function renameCollection(colId) {
      return
  } else {
      if(checkTeamIsPersonal()) {
-         getCollection(colId, (done, res) => {
+         getCollectionIdb(colId, (done, res) => {
              if(done) {
                  var col = res
                  col.name = colName
-                updateCollection(col, (done, r) => {
-                     refreshCollections()
+                updateCollection(col, (done, r) => {                                        
+                    if(done) {
+                        renameCollectionName.value = ""
+                        displayNotif("Collection successfully renamed.", {type: "success"})
+                        closeActiveModals()
+                    } else {
+                        displayNotif("Error occured.", {type: "danger"})                        
+                    }
+                    targ.removeAttribute("disabled", null)
+                    targ.innerText = "Rename"
+                    refreshCollections()
                 })
+             } else {
+                displayNotif("Error occured.", {type: "danger"})                        
+                targ.removeAttribute("disabled", null)
+                targ.innerText = "Rename"                 
              }
          })
      } else {

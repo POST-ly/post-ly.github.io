@@ -2,7 +2,7 @@ function createAuthTabs(tabId, type) {
  return `
     <div class="authTabCnt">
         <div class="tabs">
-            <ul class="tabul flex-wrap">
+            <ul class="tabul flex-wrap responseViews">
                 <li data-tab="${tabId}AuthTab:apiKey" data-name="apikey" style="display: flex;align-items: center;" class="tab ${tabId}AuthTab tab-active"><a>API(Key)</a></li>
                 <li data-tab="${tabId}AuthTab:basic" data-name="basic" style="display: flex;align-items: center;" class="tab ${tabId}AuthTab"><a>Basic</a></li>
                 <li data-tab="${tabId}AuthTab:digest" data-name="digest" style="display: flex;align-items: center;" class="tab ${tabId}AuthTab"><a>Digest</a></li>
@@ -175,7 +175,7 @@ function setAsAuthCollection(evt, authName, tabId) {
                 type: "Bearer",
                 token: authBearerToken
             }
-            break;    
+            break;
 
         case "APIKey":
             var auth_key = getFromWindow(`${tabId}authAPIKey`).value

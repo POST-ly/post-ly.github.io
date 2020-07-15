@@ -363,7 +363,7 @@ function processResponse(res, tabId, event) {
         }
         var api = setPostlyAPI(res)
         runTests(res, tabId, event, api)
-        runVisualizer(res, tabId, event)
+        runVisualizer(res, tabId, api)
 
         var dom = event.target
         dom.removeAttribute("disabled")

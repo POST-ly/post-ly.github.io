@@ -1,6 +1,7 @@
 function collectionRunnerModal(event, colId) {
     var col = getCollection(colId)
     var tabId = "collectionRunner" + Date.now()
+    var envToUse = currentEnv
 
     collectionRunnerModal.state = function(action, payload) {
         switch (action) {
@@ -18,6 +19,12 @@ function collectionRunnerModal(event, colId) {
                     req.collectionRun = true
                 }
                 break;
+            case "GET_COLLECTION_VARS":
+                return col.variables
+            case "GET_ENV":
+                return envToUse
+            case "SET_ENV":
+                return envToUse = payload
             default:
                 break;
         }
@@ -101,7 +108,7 @@ function runnerHtml(tabId, colId) {
                     <div style="margin: 9px 0; white-space: nowrap;">
                         <span>Env:</span>
                         <button style="position: relative;" onclick="return showDropdown('.${tabId}setCollectionRunnerEnvDropdown')" class="bg-default color-white pad-6 pad-left-12 pad-right-12">
-                            <span><span id="${tabId}setCollectionRunnerEnv" data-value="none">No Env</span> <span class="icon-arrow-down"></span></span>
+                            <span><span id="setCollectionRunnerEnvNode" data-value="none">No Env</span> <span class="icon-arrow-down"></span></span>
                             <div class="dropdown right-dropdown ${tabId}setCollectionRunnerEnvDropdown close">
                                 <ul>
                                     ${envsHtml}
@@ -221,15 +228,21 @@ function runCollection(event, tabId, colId) {
 
     delay = delay.length <= 0 ? 0 : delay
     iterations = iterations.length <= 0 ? 0 : iterations
+
     var runnerRes = []
     var currentIter = []
     var index = 0
+
     displayNotif("Running collections...", {type: "info"})
     iterationStart()
     // runnerResults()
 
     function runRequests() {
         var req = reqs[index]
+
+        // evaluate variables in req
+        evalVariables(req)
+
         // run pre-request in collection.
 
         // generate auth for collection
@@ -318,4 +331,72 @@ function extractRunnableRequests(reqs) {
 
 function toggleReqs(requestId) {
     return collectionRunnerModal.state("TOGGLE_RUNNABLE", requestId)
+}
+
+function setCollectionRunnerEnv(envName, EnvId) {
+    // ${tabId}setCollectionRunnerEnvNode" data-value="none"
+    var envNode = getFromWindow("setCollectionRunnerEnvNode")
+    envNode.dataset.value = EnvId
+    envNode.innerText = envName
+    collectionRunnerModal.state("SET_ENV", EnvId)
+}
+
+function evalVariables(req) {
+    // parseVarsAndReplaceCollection()
+    function parseVars(str) {
+        return parseVarsAndReplaceCollection(str, {
+            env: collectionRunnerModal.state("GET_ENV"),
+            collectionVars:  collectionRunnerModal.state("GET_COLLECTION_VARS"),
+        })        
+    }
+
+    // eval url
+    req.url = parseVars(req.url)
+
+    // eval params
+    req.params = req.params.map(param => {
+        param.key = parseVars(param.key)
+        param.value = parseVars(param.value)
+        return param
+    })
+
+    // eval body
+    if(req.body.mode == "form") {
+        req.body.form = req.body.form.map(bdy => {
+            bdy.key = parseVars(bdy.key)
+            bdy.value = parseVars(bdy.value)
+            return bdy
+        })
+    }
+
+    // eval headers
+    req.headers = req.headers.map(header => {
+        header.key = parseVars(header.key)
+        header.value = parseVars(header.value)
+        return header
+    })
+
+    // eval authorization
+    var auth = req.authorization
+    var authType = auth.type
+
+    switch (authType) {
+        case 'Basic':
+            auth.password = parseVars(auth.password)
+            auth.username = parseVars(auth.username)
+            break;
+        case 'Bearer':
+            auth.token = parseVars(auth.token)
+            break;
+
+        case "APIKey":
+            auth.auth_key = parseVars(auth.auth_key)
+            auth.auth_value = parseVars(auth.auth_value)
+        break;
+    
+        default:
+            break;
+    }
+
+    return req
 }
