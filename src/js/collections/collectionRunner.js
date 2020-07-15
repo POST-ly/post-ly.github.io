@@ -1,5 +1,28 @@
 function collectionRunnerModal(event, colId) {
+    var col = getCollection(colId)
     var tabId = "collectionRunner" + Date.now()
+
+    collectionRunnerModal.state = function(action, payload) {
+        switch (action) {
+            case "GET_REQUESTS":
+                return col.requests                
+            case "EDIT_REQUEST":
+                break;
+            case "GET_COLLECTION":
+                return col
+            case "TOGGLE_RUNNABLE":
+                var req = col.requests.filter((req, i) => i == payload)[0]
+                if(req.collectionRun) {
+                    req.collectionRun = false
+                } else {
+                    req.collectionRun = true
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
     var collectionRunnerModalHtmlStr = `
         <div class="modal-backdrop collectionRunnerModalBackdrop"></div>
         <div class="modal-body modal-width-800">
@@ -39,6 +62,7 @@ function collectionRunnerModal(event, colId) {
     closeActiveModals()
     modalsActive.push(modal)
     modal.querySelector(".collectionRunnerModalBackdrop").addEventListener("click", (e) => {
+        delete collectionRunnerModal.state
         document.body.removeChild(modal)
         closeActiveModals()
     })
@@ -47,7 +71,7 @@ function collectionRunnerModal(event, colId) {
 }
 
 function runnerHtml(tabId, colId) {
-    var col = getCollection(colId)
+    var col = collectionRunnerModal.state("GET_COLLECTION")
     var envsHtml = ""
     Envs.forEach(function(env) {
         envsHtml += `
@@ -59,9 +83,10 @@ function runnerHtml(tabId, colId) {
     if(col.requests) {
         for (var index = 0; index < col.requests.length; index++) {
             var req = col.requests[index];
+            req.collectionRun = true
             reqsHtml += `
                 <li style="border-bottom: 1px solid rgb(221, 221, 221);padding: 10px 3px;">
-                    <span><input type="checkbox" checked onchange="return toggleReqs()" /></span>
+                    <span><input type="checkbox" checked onchange="return toggleReqs('${index}')" /></span>
                     <span><b>${req.methodType}</b></span>
                     <span>${req.name}</span>
                 </li>
@@ -182,8 +207,10 @@ function runCollection(event, tabId, colId) {
     targ.setAttribute("disabled", true)
     targ.innerText = "Running..."
 
-    var col = getCollection(colId)
+    var col = collectionRunnerModal.state("GET_COLLECTION")
     var reqs = col.requests
+
+    reqs = extractRunnableRequests(col.requests)
 
     // get settings.
     // ${tabId}collectionRunnerSettingsDelay
@@ -278,4 +305,17 @@ function setPostlyAPI(res) {
     _postly.headers = headers
 
     return _postly
+}
+
+function extractRunnableRequests(reqs) {
+    return reqs.filter(req => { 
+        if(req.collectionRun) {
+            return true
+        } else
+            return false
+    })
+}
+
+function toggleReqs(requestId) {
+    return collectionRunnerModal.state("TOGGLE_RUNNABLE", requestId)
 }

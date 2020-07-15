@@ -10,13 +10,13 @@ function Regex (left, right, matchEmpty) {
     // return new RegExp(`(?:${l})(.${_}?)${r}`, 'g')
 }
 
-function parseVarsAndReplace(str) {
+function parseVarsAndReplace(str, localVars) {
     // {{url}}/api/local/{{endpoint}}
     var currVars
     var parsedStr
     
     // get current Env
-    // search in currnet env
+    // search in current env
     if(currentEnv && currentEnv.vars) {
         currVars = currentEnv.vars
         parsedStr = findAndReplace(str, currVars)
