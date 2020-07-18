@@ -1,5 +1,17 @@
-const { getItems } = require("./../utils")
 const log = console.log
+const mongoose = require('mongoose')
+
+let UserSchema = new mongoose.Schema({
+    username: String,
+    email: String,
+    hashed_password: String
+
+})
+
+module.exports = mongoose.model('User', UserSchema)
+
+/*
+const { getItems } = require("./../utils")
 
 const users = [
     {
@@ -71,3 +83,4 @@ class UserCls {
 const User = new UserCls()
 
 module.exports =  User
+*/

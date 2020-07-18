@@ -1,4 +1,44 @@
 const log = console.log
+const mongoose = require('mongoose')
+
+let TeamSchema = new mongoose.Schema({
+    name: String,
+    collections: [ mongoose.Schema.Types.ObjectId ],
+    users: [ { role: String, id: mongoose.Schema.Types.ObjectId } ]
+})
+
+module.exports = mongoose.model('Team', TeamSchema)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 const { getItems } = require("./../utils")
 
 const teams = [
@@ -42,3 +82,5 @@ class TeamCls {
 const Team = new TeamCls()
 
 module.exports = Team
+
+*/

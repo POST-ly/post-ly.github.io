@@ -13,7 +13,6 @@ const log = console.log
 app.use(cors())
 
 app.use((req, res, next) => {
-    log("My cors")
     res.setHeader("Access-Control-Allow-Origin", "*")
     res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, DELETE, PUT")
@@ -23,10 +22,20 @@ app.use((req, res, next) => {
     next()
 })
 
-app.use(bodyParser.json({limit: '50mb'}))
+/*
+app.use(bodyParser.raw({
+    limit: '50mb',
+    type: "text/plain"
+}))
+*/
 app.use(helmet())
 
 app.post("/api/user", (req, res, next) => {
+    log(req.body)
+    log(req.headers)
+    req.on("data", (b) => {
+        log(b.toString())
+    })
     log("/api/user", " POST")
     res.send("/api/user POST")
     next()

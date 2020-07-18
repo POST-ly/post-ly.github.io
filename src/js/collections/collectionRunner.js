@@ -204,25 +204,29 @@ function renderRunnerResults(its) {
 
 function setCollectionRunnerEnv(envName, envId) {
     // id="${tabId}setCollectionRunnerEnv" data-value="none"
-    var n = window[`${tabId}setCollectionRunnerEnv`]
+    var n = window[`setCollectionRunnerEnvNode`]
     n.innerText = envName
     n.dataset.value = envId
 }
 
 function runCollection(event, tabId, colId) {
+    var col = collectionRunnerModal.state("GET_COLLECTION")
+    if(!col.requests || col.requests.length <= 0) {
+        return false
+    }
+    var reqs = col.requests
+
+
     var targ = event.target
     targ.setAttribute("disabled", true)
     targ.innerText = "Running..."
-
-    var col = collectionRunnerModal.state("GET_COLLECTION")
-    var reqs = col.requests
 
     reqs = extractRunnableRequests(col.requests)
 
     // get settings.
     // ${tabId}collectionRunnerSettingsDelay
     // ${tabId}collectionRunnerSettingsIterations
-    var envToUse = window[`${tabId}setCollectionRunnerEnv`].dataset.value
+    var envToUse = window[`setCollectionRunnerEnvNode`].dataset.value
     var delay = window[`${tabId}collectionRunnerSettingsDelay`].value
     var iterations = window[`${tabId}collectionRunnerSettingsIterations`].value
 
@@ -377,25 +381,29 @@ function evalVariables(req) {
     })
 
     // eval authorization
-    var auth = req.authorization
-    var authType = auth.type
+    var auth
+    var authType
+    if(req.authorization) {
+        auth = req.authorization
+        authType = auth.type
 
-    switch (authType) {
-        case 'Basic':
-            auth.password = parseVars(auth.password)
-            auth.username = parseVars(auth.username)
-            break;
-        case 'Bearer':
-            auth.token = parseVars(auth.token)
-            break;
+        switch (authType) {
+            case 'Basic':
+                auth.password = parseVars(auth.password)
+                auth.username = parseVars(auth.username)
+                break;
+            case 'Bearer':
+                auth.token = parseVars(auth.token)
+                break;
 
-        case "APIKey":
-            auth.auth_key = parseVars(auth.auth_key)
-            auth.auth_value = parseVars(auth.auth_value)
-        break;
-    
-        default:
+            case "APIKey":
+                auth.auth_key = parseVars(auth.auth_key)
+                auth.auth_value = parseVars(auth.auth_value)
             break;
+        
+            default:
+                break;
+        }
     }
 
     return req

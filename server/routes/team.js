@@ -13,9 +13,23 @@ module.exports = (router) => {
      * get team by id
      */
     router
-        .route('/team/:id')
+        .route('/teams/:teamId')
         .get(teamCtrl.getTeamById)
     
+    /**
+     * create a team
+     */
+        router
+            .post("/teams")
+
+    /**
+     * edit a team
+     */
+        router
+            .put("/teams/:teamId")
+
+    // API v1
+
     /**
      * load teams belonged by a user
      */

@@ -18,9 +18,23 @@ function createGraphQLDisplay(tabId) {
 }
 
 function setGraphQLEditor() {
+    var currTab = getCurrTab()
+    var query = ""
+    var variables = ""
+
+    if(currTab.body["graphql"]) {
+        if(currTab.body["graphql"]["query"]) {
+            query = currTab.body["graphql"]["query"]
+        }
+
+        if(currTab.body["graphql"]["variables"]) {
+            variables = currTab.body["graphql"]["variables"]
+        }
+    }
+
     if(!currentEditors[currentTab][`${currentTab}BodyGraphQLQueryEditor`]) {
         currentEditors[currentTab][`${currentTab}BodyGraphQLQueryEditor`] = setCodeEditor(getFromWindow(`${currentTab}BodyGraphQLQueryEditor`), {
-            value: "",
+            value: query,
             lineNumbers: true, 
             tabSize: 2,
             mode: {
@@ -33,7 +47,7 @@ function setGraphQLEditor() {
     }
     if(!currentEditors[currentTab][`${currentTab}BodyGraphQLVariablesEditor`]) {
         currentEditors[currentTab][`${currentTab}BodyGraphQLVariablesEditor`] = setCodeEditor(getFromWindow(`${currentTab}BodyGraphQLVariablesEditor`), {
-            value: "",
+            value: variables,
             lineNumbers: true, 
             tabSize: 2,
             mode: {
@@ -46,24 +60,33 @@ function setGraphQLEditor() {
     }
 }
 
-function getGraphQLEditorValue() {
+function getGraphQLEditorValue(forSave) {
     var query = ""
     var variables = ""
     if(currentEditors[currentTab][`${currentTab}BodyGraphQLQueryEditor`]) {
         query = currentEditors[currentTab][`${currentTab}BodyGraphQLQueryEditor`].getValue().trim()
     }
     if(currentEditors[currentTab][`${currentTab}BodyGraphQLVariablesEditor`]) {
-        variables = currentEditors[currentTab][`${currentTab}BodyGraphQLVariablesEditor`].getValue().trim()
-            .replace("\\", "")
-            .replace("\n", "")
-            .replace("\t", "")
-        if(variables.length <= 0)
-            variables = "null"
+        variables = currentEditors[currentTab][`${currentTab}BodyGraphQLVariablesEditor`].getValue()
+        if(!forSave) {
+            variables = variables.trim()
+                .replace("\\", "")
+                .replace("\n", "")
+                .replace("\t", "")
+        }
+
+        if(!forSave)
+            if(variables.length <= 0)
+                variables = "null"
+    }
+    if(!forSave) {
+        // set appropriate headers
+        postData[currentTab].headers.push({key: "content-type", value: "application/json"})
     }
     return {
         query,
         variables
-    }    
+    }
 }
 
 /**

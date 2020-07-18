@@ -13,9 +13,9 @@ const url = process.env.MONGODB_URI || "mongodb://localhost:27017/postly"
 
 /** connect to MongoDB datastore */
 try {
-    /*mongoose.connect(url, {
-        //useMongoClient: true
-    })*/    
+    mongoose.connect(url, {
+        // useMongoClient: true
+    })
 } catch (error) {
     
 }

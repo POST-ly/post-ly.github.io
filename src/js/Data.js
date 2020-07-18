@@ -34,3 +34,6 @@ var currentEditors = {}
 
 var currentTeam
 var user
+
+var lastEl
+var selectedColId

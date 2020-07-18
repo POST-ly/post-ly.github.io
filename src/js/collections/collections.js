@@ -264,8 +264,6 @@ function historyCollectionsFolderClick(evt, className) {
     document.querySelector(className).classList.toggle("close")
 }
 
-var lastEl
-var selectedColId
 function checkboxOnChange(event, colId) {
     selectedColId = colId
     if(lastEl) {

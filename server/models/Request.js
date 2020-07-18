@@ -1,5 +1,53 @@
 const log = console.log
-const { getItems } = require("./../utils")
+const mongoose = require('mongoose')
+
+
+let RequestSchema = new mongoose.Schema({
+    url: String,
+    body: mongoose.Schema.Types.Mixed,
+    params: Array,
+    name: String,
+    methodType: String,
+    headers: Array,
+    options: mongoose.Schema.Types.Mixed,
+    requestId: mongoose.Schema.Types.ObjectId,
+    teamId: mongoose.Schema.Types.ObjectId,
+    collectionId: mongoose.Schema.Types.ObjectId,
+    tests: String,
+    prerequest: String,
+    visualizer: String,
+    variables: Array
+})
+
+module.exports = mongoose.model('Request', RequestSchema)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+// const { getItems } = require("./../utils")
 
 const requests = [
     {
@@ -80,3 +128,4 @@ class RequestCls {
 const Request = new RequestCls()
 
 module.exports = Request
+*/

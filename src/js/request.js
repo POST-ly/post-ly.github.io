@@ -45,7 +45,16 @@ function addNewTab(evt, first) {
         methodType: window[`${currentTab}methodTypeButton`].innerText,
         body: {
             mode: "form",
-            form: []
+            form: [],
+            raw: {
+                lang: "json",
+                content: null
+            },
+            graphql: {
+                query: null,
+                variables: null
+            },
+            binary: null
         },
         params: [],
         headers: [],
@@ -414,6 +423,8 @@ function saveRequest(tabId, openModal) {
             .classList.toggle("close") */
     else {
 
+        collectAllRequestData(tabId)
+        /*
         // collect all data
         postData[tabId].url = document.querySelector(`.${currentTab}UrlInput`).value
         postData[tabId].teamId = currentTeam.id
@@ -435,6 +446,7 @@ function saveRequest(tabId, openModal) {
         if(!postData[currentTab].requestId) {
             postData[currentTab].requestId = "requestId" + Date.now()
         }
+        */
 
         // check if the request belongs to a collection
         if(!postData[currentTab].collectionId) {
@@ -498,6 +510,9 @@ function saveRequestUrlName(evt) {
     evt.target.innerText = "saving..."
     evt.target.setAttribute("disabled", null)
 
+    postData[currentTab]["name"] = requestName
+    collectAllRequestData(currentTab)
+    /*
     if(!postData[currentTab].requestId) {
         postData[currentTab].requestId = "requestId" + Date.now()
     }
@@ -526,6 +541,7 @@ function saveRequestUrlName(evt) {
     if(selectedColId) {
         postData[currentTab]["collectionId"] = selectedColId
     }
+    */
 
     if(!checkTeamIsPersonal()) {
         // edit request on server
@@ -581,4 +597,42 @@ function saveRequestUrlName(evt) {
         window[`${currentTab}TabMethod`].innerHTML = postData[currentTab].methodType
         refreshHistoryTab()
     })
+}
+
+function collectAllRequestData(tabId) {
+    if(!postData[currentTab].requestId) {
+        postData[currentTab].requestId = "requestId" + Date.now()
+    }
+
+    // TODO: gather all the tests and pre-request scripts.
+
+    postData[currentTab]["teamId"] = currentTeam.id
+
+    // collect all data
+    postData[tabId].url = document.querySelector(`.${currentTab}UrlInput`).value
+    postData[tabId].teamId = currentTeam.id
+
+    // collection test, pre-request script, and visualizer
+    var testsEditor = getCodeEditor(tabId, "tests")
+    var prerequestEditor = getCodeEditor(tabId, "prerequest")
+    var visualizerEditor = getCodeEditor(tabId, "visualizer")
+    if(testsEditor) {
+        postData[tabId].tests = testsEditor.getValue()
+    }
+    if(prerequestEditor) {
+        postData[tabId].prerequest = prerequestEditor.getValue()
+    }
+    if(visualizerEditor) {
+        postData[tabId].visualizer = visualizerEditor.getValue()
+    }
+
+    if(!postData[currentTab].requestId) {
+        postData[currentTab].requestId = "requestId" + Date.now()
+    }
+
+    if(selectedColId) {
+        postData[currentTab]["collectionId"] = selectedColId
+    }
+
+    setBodyForSave()
 }

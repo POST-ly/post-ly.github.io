@@ -1,4 +1,41 @@
 const log = console.log
+const mongoose = require('mongoose')
+
+let CollectionSchema = new mongoose.Schema({
+    collectionId: Number,
+    name: String,
+    requests: [ mongoose.Schema.Types.ObjectId ],
+    teamId: mongoose.Schema.Types.ObjectId,
+    variables: Array,
+    tests: String,
+    prerequest: String,
+    authorization: Object
+})
+
+module.exports = mongoose.model('Collection', CollectionSchema)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 const { getItems } = require("./../utils")
 
 const collections = [
@@ -53,6 +90,4 @@ class CollectionCls {
     }
 
 }
-
-const Collection = new CollectionCls()
-module.exports = Collection
+*/

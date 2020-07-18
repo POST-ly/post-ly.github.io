@@ -34,7 +34,7 @@ function displayNotif(message, opts) {
         document.body.removeChild(p)
         delete displayNotif.currentNotif
     }, 1500)
-    displayNotif.currentNotif = {timeout, node: p}
+    displayNotif.currentNotif = { timeout, node: p }
 }
 
 function showDropdown(className) {
@@ -190,6 +190,10 @@ function closeActiveModals() {
 
 function getFromWindow(name) {
     return window[name]
+}
+
+function getCurrTab() {
+    return postData[currentTab]
 }
 
 /**

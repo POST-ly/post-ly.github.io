@@ -44,7 +44,7 @@ function bodyBuilder(body) {
             }
             break;
         case "raw":
-            data = parseVarsAndReplace(objToStr(getRawEditorValue()));
+            data = getRawEditorValue();
             break;
         case "graphql":
             /**
@@ -57,8 +57,30 @@ function bodyBuilder(body) {
                 variables: queryVars.variables.trim()
             }
             break;
+        case "binary":
+            data = getBinaryValue()
+            break;
         default:
             break;
     }
     return data
+}
+
+function setBodyForSave() {
+    switch (postData[currentTab].body.mode) {
+        case "raw":
+            var t = getRawEditorValue(true)
+            var currTab = getCurrTab()
+            currTab.body.raw = t
+            break;
+
+        case "graphql":        
+            var t = getGraphQLEditorValue(true)
+            var currTab = getCurrTab()
+            currTab.body.graphql = t
+            break; 
+
+        default:
+            break;
+    }
 }

@@ -21,18 +21,18 @@ function send(event, tabId) {
     url = processUrl(url)
 
     try {
+        // process body
+        if(postData[tabId].body) {
+            bdy = bodyBuilder(postData[tabId].body)
+        }
+    } catch(e) {}
+
+    try {
         // process headers
         if(postData[tabId].headers) {
             postData[tabId].headers.forEach(header => {
                 headers[parseVarsAndReplace(header.key)] = parseVarsAndReplace(header.value)
             })
-        }
-    } catch(e) {}
-
-    try {
-        // process body
-        if(postData[tabId].body) {
-            bdy = bodyBuilder(postData[tabId].body)
         }
     } catch(e) {}
 

@@ -94,6 +94,7 @@ function createNewTab(tabId) {
                                                         <li><a onclick="return setBodyType('form', 'Form')">Form</a></li>
                                                         <li><a onclick="return setBodyType('graphql', 'GraphQL')">GraphQL</a></li>
                                                         <li><a onclick="return setBodyType('raw', 'Raw')">Raw</a></li>
+                                                        <li><a onclick="return setBodyType('binary', 'Binary')">Binary</a></li>
                                                     </ul>
                                                 </div>                            
                                             </button>
@@ -106,6 +107,9 @@ function createNewTab(tabId) {
                                         </div>
                                         <div id="${tabId}Bodyraw" class="close">
                                             ${createRawNode(tabId)}
+                                        </div>
+                                        <div id="${tabId}Bodybinary" class="close">
+                                            ${createBinaryNode(tabId)}
                                         </div>
                                     </div>
 
