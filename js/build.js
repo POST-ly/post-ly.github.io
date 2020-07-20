@@ -1,4 +1,4 @@
-/**
+undefined/**
  * core-js 2.6.11
  * https://github.com/zloirock/core-js
  * License: http://rock.mit-license.org
@@ -7259,6 +7259,8 @@ function setOptions(event, type) {
 }
 function createNewTab(tabId) {
     var newtab = `
+                <div id="${tabId}ViewMode">
+                    <div class="ViewModeRequest">
                         <div class="urlArea">
                             <div class="inputBox">
                                 <div class="methodCnt">
@@ -7302,7 +7304,7 @@ function createNewTab(tabId) {
                         
                         <div class="postDataCnt">
                             <div class="tabs">
-                                <ul class="tabul flex-wrap">
+                                <ul class="tabul flex-wrap" style="display: flex;">
                                     <li data-name="authorization" class="tab ${tabId}postDataCntTab tab-active"><a>Authorization</a></li>
                                     <li data-name="headers" class="tab ${tabId}postDataCntTab"><a>Headers</a></li>
                                     <li data-name="body" class="tab ${tabId}postDataCntTab"><a>Body</a></li>
@@ -7313,6 +7315,9 @@ function createNewTab(tabId) {
                                     <li data-name="visualizer" class="tab ${tabId}postDataCntTab"><a>Visualizer</a></li>
                                     <li data-name="more" class="tab ${tabId}postDataCntTab">
                                         <a>More</a>
+                                    </li>
+                                    <li style="flex-grow: 1;display: flex;justify-content: flex-end;align-items: center;">
+                                        <span style="cursor: pointer;" title="Click to toggle Two-Side Column Layout" class="icon-screen-desktop" onclick="return toggleSideView(event, '${tabId}')"></span>
                                     </li>
                                 </ul>
                                 <div>
@@ -7490,7 +7495,8 @@ function createNewTab(tabId) {
                                 </div>
                             </div>
                         </div>
-
+                    </div>
+                    <div class="ViewModeResponse">
                         <div class="response">
                             <h3 class="responseHeader">Response</h3>
                             <div id="display">
@@ -7549,8 +7555,15 @@ function createNewTab(tabId) {
                                 
                             </div>
                         </div>
+                    </div>
+                </div>
     `
     return newtab
+}
+
+function toggleSideView(event, tabId) {
+    var node = getFromWindow(`${tabId}ViewMode`)
+    node.classList.toggle("ViewModeTwoSideCol")
 }
 function send(event, tabId) {
     var dom = event.target
