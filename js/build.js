@@ -1,4 +1,4 @@
-undefined/**
+/**
  * core-js 2.6.11
  * https://github.com/zloirock/core-js
  * License: http://rock.mit-license.org
@@ -6523,7 +6523,7 @@ function generateAuth(headers, url, tabId, type) {
         generateAuthRequest
     }
 
-    generateAuthStrategy["generateAuth" + type](headers, url, tabId)
+    return generateAuthStrategy["generateAuth" + type](headers, url, tabId)
 }
 
 function generateAuthCollection(req, authorization) {
@@ -7622,9 +7622,9 @@ function send(event, tabId) {
     try {
         if(postData[tabId].authorization) {
             if(postData[tabId].authorization.type == "APIKey") {
-                url += generateAuth(headers, url, "Request")
+                url += generateAuth(headers, url, tabId, "Request")
             } else {
-                headers["Authorization"] = generateAuth()
+                headers["Authorization"] = generateAuth(headers, url, tabId, "Request")
             }
         }
     } catch (e) {}
