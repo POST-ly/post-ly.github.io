@@ -1206,7 +1206,7 @@ function displayNotif(message, opts) {
     var timeout = setTimeout(() => {
         document.body.removeChild(p)
         delete displayNotif.currentNotif
-    }, 1500)
+    }, 5000)
     displayNotif.currentNotif = { timeout, node: p }
 }
 
@@ -1426,6 +1426,39 @@ function setCurrentTabEditor(c) {
     currentEditors[c] = {}
 }
 
+function handleIdbError(err) {
+    if ((err.name === "QuotaExceedeError") || err.inner && err.inner.name === "QuotaExceededError") {
+        displayNotif("The storage quota for the current origin was exceeded.", { type: "danger" })
+    } else if (err.name !== "ConstraintError") {
+        // Any other error
+        // displayNotif(err.toString(), { type: "danger" })        
+    }
+}
+
+function setPostlyAPI(res) {
+    var _postly = {}
+    var data = res.data
+    var headers = res.headers
+    var status = res.status
+    var statusText = res.statusText
+
+    // set postly data
+    _postly.config = res
+
+    _postly.response = data
+
+    // set postly responseCodeText
+    _postly.responseCodeText = statusText
+
+    // set postly responseCode
+    _postly.responseCode = status
+
+    // Set response headers to postly
+    _postly.headers = headers
+
+    return _postly
+}
+
 /**
  * Determine if a value is an Array
  *
@@ -1596,6 +1629,7 @@ function addHistory(data) {
     }).then(function(returnedHistory) {
         return cb(true, returnedHistory)
     }).catch(function(err) {
+        handleIdbError(err)
         return cb(false, err)
     })
 }
@@ -1628,6 +1662,7 @@ function updateHistory(data, cb) {
     postly.historyDb.history.put(data).then(function(res) {
         return cb(true, res)
     }).catch(function(err) {
+        handleIdbError(err)
         return cb(false, err)
     })
 }
@@ -1662,6 +1697,7 @@ function deleteAllHistory(cb) {
     postly.historyDb.history.clear().then(function(res) {
         return cb(true, res)
     }).catch(function(err) {
+        handleIdbError(err)
         return cb(false, err)
     })
 }
@@ -1678,7 +1714,8 @@ function addCollection(data, cb) {
         return postly.collectionsDb.collections.get(data.collectionId)
     }).then(function(returnedCollection) {
         return cb(true, returnedCollection)
-    }).catch(function(err) {
+    }).catch(function (err) {
+        handleIdbError(err)
         return cb(false, err)
     })
 }
@@ -1690,6 +1727,9 @@ function getAllCollection(cb) {
         collections.push(collection)
     }).then(function () {
         cb(collections)        
+    }).catch(err => {
+        log(err)
+        // handleIdbError(err)
     })
     // log("Exiting:", collections)
 }
@@ -1707,6 +1747,7 @@ function updateCollection(data, cb) {
     postly.collectionsDb.collections.put(data).then(function(res) {
         return cb(true, res)
     }).catch(function(err) {
+        handleIdbError(err)
         return cb(false, err)
     })
 }
@@ -1715,6 +1756,7 @@ function deleteCollectionDb(data, cb) {
     postly.collectionsDb.collections.delete(data.collectionId).then(function(res) {
         return cb(true, res)
     }).catch(function(err) {
+        handleIdbError(err)
         return cb(false, err)
     })
 }
@@ -1733,6 +1775,7 @@ function addRequest(data, cb) {
     }).then(function(returnedRequest) {
         return cb(true, returnedRequest)
     }).catch(function(err) {
+        handleIdbError(err)
         return cb(false, err)
     })
 }
@@ -1769,6 +1812,7 @@ function updateRequest(data, cb) {
     postly.requestsDb.requests.put(data).then(function(res) {
         return cb(true, res)
     }).catch(function(err) {
+        handleIdbError(err)
         return cb(false, err)
     })
 }
@@ -1777,6 +1821,7 @@ function deleteRequest(data, cb) {
     postly.requestsDb.requests.delete(data).then(function(res) {
         return cb(true, res)
     }).catch(function(err) {
+        handleIdbError(err)
         return cb(false, err)
     })
 }
@@ -1795,6 +1840,7 @@ function addEnvIdb(data, cb) {
     }).then(function(returnedEnv) {
         return cb(true, returnedEnv)
     }).catch(function(err) {
+        handleIdbError(err)
         return cb(false, err)
     })
 }
@@ -1815,9 +1861,11 @@ function deleteEnvIdb(EnvId, cb) {
             postly.EnvDb.Env.delete(Env).then(function(res) {
                 return cb(true, res)
             }).catch(function(err) {
+                handleIdbError(err)
                 return cb(false, err)
             })
         }
+        handleIdbError("Env not found.")
         return cb(false, "Env not found.")
     })
 }
@@ -1826,6 +1874,7 @@ function updateEnvIdb(data, cb) {
     postly.EnvDb.Env.put(data).then(function(res) {
         return cb(true, res)
     }).catch(function(err) {
+        handleIdbError(err)
         return cb(false, err)
     })
 }
@@ -1843,6 +1892,7 @@ function addNewMockServerIdb(data, cb) {
     }).then(function(returnedMockServers) {
         return cb(true, returnedMockServers)
     }).catch(function(err) {
+        handleIdbError(err)
         return cb(false, err)
     })
 }
@@ -1868,11 +1918,13 @@ function getMockServersIdb(cb) {
 function createAuthTabs(tabId, type) {
  return `
     <div class="authTabCnt">
-        <div class="tabs">
-            <ul class="tabul flex-wrap responseViews">
+        <div class="tabs" style="border-bottom: unset;">
+            <ul style="border-bottom: unset;" class="tabul flex-wrap responseViews">
                 <li data-tab="${tabId}AuthTab:apiKey" data-name="apikey" style="display: flex;align-items: center;" class="tab ${tabId}AuthTab tab-active"><a>API(Key)</a></li>
                 <li data-tab="${tabId}AuthTab:basic" data-name="basic" style="display: flex;align-items: center;" class="tab ${tabId}AuthTab"><a>Basic</a></li>
+                <!--
                 <li data-tab="${tabId}AuthTab:digest" data-name="digest" style="display: flex;align-items: center;" class="tab ${tabId}AuthTab"><a>Digest</a></li>
+                -->
                 <li data-tab="${tabId}AuthTab:bearer" data-name="bearer" style="display: flex;align-items: center;" class="tab ${tabId}AuthTab"><a>Bearer</a></li>
                 <!--
                 <li class="tab ${tabId}AuthTab"><a>Hawk</a></li>
@@ -1915,6 +1967,7 @@ function createAuthTabs(tabId, type) {
                     </div>
                 </div> 
 
+                <!--
                 <div data-tab="${tabId}AuthTab:digest" data-name="digest" class="tab-content ${tabId}AuthTab Digest">
                     <div style="margin: 9px 0;">
                         <input type="text" id="${tabId}authDigestUsername" placeholder="Username" />
@@ -1922,7 +1975,7 @@ function createAuthTabs(tabId, type) {
                     <div style="margin: 9px 0;">
                         <input type="text" id="${tabId}authDigestPassword" placeholder="Password" />
                     </div>
-                    <!--
+                    
                     <div style="margin: 9px 0;">
                         <button style="position: relative;" onclick="return showDropdown('.${tabId}authDigestAlgortihmDropdown')" class="bg-default color-white pad-6 pad-left-12 pad-right-12">
                             <span>Algorithm: <span id="${tabId}authDigestAlgorithm">MD5</span> <span class="icon-arrow-down"></span></span>
@@ -1933,7 +1986,7 @@ function createAuthTabs(tabId, type) {
                                 </ul>
                             </div>                            
                         </button>
-                    </div>-->
+                    </div>
                     <div style="margin: 9px 0;">
                         <input type="text" id="${tabId}authDigestRealm" placeholder="Realm" />
                     </div>
@@ -1959,6 +2012,7 @@ function createAuthTabs(tabId, type) {
                         <button onclick="return setAsAuth(event, 'Digest', '${tabId}', '${type}')" class="bg-default color-white pad-6 pad-left-12 pad-right-12">Set As Auth.</button>
                     </div>
                 </div> 
+                -->
 
                 <div data-tab="${tabId}AuthTab:bearer" data-name="bearer" class="tab-content ${tabId}AuthTab Bearer">
                     <div style="margin: 9px 0;">
@@ -3137,12 +3191,16 @@ function createNewTab(tabId) {
                                     <div class="tab-content ${tabId}responseTabContent tab-content-active Body">
                                         <!--Response Body-->
 
-                                        <div class="tabs">
-                                            <ul class="tabul responseViews">
+                                        <div class="tabs" style="display: flex;align-items: center; border-bottom: unset;">
+                                            <ul class="tabul responseViews" style=" border-bottom: unset;">
                                                 <li class="${tabId}response tab tab-active" data-tab="${tabId}response:prettier"><a onclick="return refreshDisplay('Prettier')">Prettier</a></li>
                                                 <li class="${tabId}response tab" data-tab="${tabId}response:raw"><a onclick="return refreshDisplay('Raw')">Raw</a></li>
                                                 <li class="${tabId}response tab" data-tab="${tabId}response:preview"><a >Preview</a></li>
                                                 <li class="${tabId}response tab" data-tab="${tabId}response:visualizerpreview"><a >Visualizer(Preview)</a></li>
+                                            </ul>
+                                            <ul class="tabul" style="margin-left: 2px; border-bottom: unset;">
+                                                <li class="tab"><a onclick="return copyResponse(event, '${tabId}')" class="icon-docs" title="Copy response to Clipboard."></a></li>
+                                                <li class="tab"><a onclick="return downloadResponseBtn(event, '${tabId}')" class="icon-cloud-download" title="Download response."></a></li>
                                             </ul>
                                         </div>
                                         <div>
@@ -3184,6 +3242,32 @@ function createNewTab(tabId) {
 function toggleSideView(event, tabId) {
     var node = getFromWindow(`${tabId}ViewMode`)
     node.classList.toggle("ViewModeTwoSideCol")
+}
+
+function copyResponse(evt, tabId) {
+    var resEditor = getCodeEditor(tabId, `${tabId}responsePrettierDisplay`)
+    navigator.clipboard.writeText(resEditor.getValue()).then(text => {
+        displayNotif("Copied!!", {type: "success"})
+    }).catch(err => {
+        displayNotif("Error occured while attempting to copy the response", { type: "danger" })
+    })
+}
+
+function downloadResponseBtn(evt, tabId) {
+    var resEditor = getCodeEditor(tabId, `${tabId}responsePrettierDisplay`)
+    if (resEditor) {
+        var data = resEditor.getValue()
+        /*
+        var currTab = getCurrTab()
+        var res = currTab.response || false
+        var type = res.headers["content-type"] || undefined
+        */
+
+        var aNode = document.createElement("a")
+        aNode.href = URL.createObjectURL(new Blob([data], { type: "text/plain" }))
+        aNode.download = Date.now() + "response.txt"
+        aNode.click()
+    }
 }
 function send(event, tabId) {
     var dom = event.target
@@ -3343,12 +3427,12 @@ function setMethodType(tabId, method) {
     showDropdown("." + tabId + "methodTypeDropdown")
 }
 
-function addBody(bodyKey, bodyValue) {
+function addBody(bodyKey, bodyValue, r, r_id) {
     // log(bodyKey, bodyValue)
     if(!bodyKey.value.length > 0 || !bodyValue.value.length > 0)
         return
 
-    var id = "bodyForm" + Date.now()
+    var id = r_id ? r_id : "bodyForm" + Date.now()
     var data = {
         id,
         "key": bodyKey.value,
@@ -3365,7 +3449,8 @@ function addBody(bodyKey, bodyValue) {
     tr.setAttribute("id", id)
     tr.innerHTML = h
 
-    postData[currentTab].body.form.push(data)
+    if(!r)
+        postData[currentTab].body.form.push(data)
 
     bodyKey.value = ""
     bodyValue.value = ""
@@ -3388,11 +3473,11 @@ function addHeadersKey(evt, hdrsKey) {
     showDropdown(`.${currentTab}headersDropdown`)
 }
 
-function addHeaders(hdrsKey, hdrsValue) {
+function addHeaders(hdrsKey, hdrsValue, r, r_id) {
     if(!hdrsKey.value.length > 0 || !hdrsValue.value.length > 0)
         return
 
-    var id = "headers" + Date.now()
+    var id = r_id ? r_id : "headers" + Date.now()
 
     var hdrsKeyValue = hdrsKey.value
     var hdrsValueValue = hdrsValue.value
@@ -3407,11 +3492,13 @@ function addHeaders(hdrsKey, hdrsValue) {
     tr.setAttribute("id", id)
     tr.innerHTML = h
 
-    postData[currentTab].headers.push({
-        "id": id,        
-        "key": hdrsKey.value,
-        "value": hdrsValue.value
-    })
+    if (!r) {
+        postData[currentTab].headers.push({
+            "id": id,
+            "key": hdrsKey.value,
+            "value": hdrsValue.value
+        })        
+    }
 
     hdrsKey.value = ""
     hdrsValue.value = ""
@@ -3429,11 +3516,11 @@ function delHeaders(id) {
     window[`${currentTab}headersTr`].removeChild(window[id])
 }
 
-function addParams(paramsKey, paramsValue) {
+function addParams(paramsKey, paramsValue, r, r_id) {
     if(!paramsKey.value.length > 0 || !paramsValue.value.length > 0)
         return
 
-    var id = "params" + Date.now()
+    var id = r_id ? r_id : "params" + Date.now()
 
     var h = `
             <td><input type="checkbox" checked=true onchange="return toggleOpt(event, '${id}', 'params', '${paramsKey.value}', '${paramsValue.value}')" /></td>
@@ -3445,11 +3532,13 @@ function addParams(paramsKey, paramsValue) {
     tr.setAttribute("id", id)
     tr.innerHTML = h
 
-    postData[currentTab].params.push({
-        "id": id,
-        "key": paramsKey.value,
-        "value": paramsValue.value
-    })
+    if (!r) {
+        postData[currentTab].params.push({
+            "id": id,
+            "key": paramsKey.value,
+            "value": paramsValue.value
+        })            
+    }
 
     paramsKey.value = ""
     paramsValue.value = ""
@@ -3549,6 +3638,8 @@ function processResponse(res, tabId, event) {
             downloadResponse(data, res)
         }
         var api = setPostlyAPI(res)
+        setResponseToPostData(res)
+
         runTests(res, tabId, event, api)
         runVisualizer(res, tabId, api)
 
@@ -3578,6 +3669,8 @@ function processResponseError(e, tabId, event) {
 
     setDisplay(e.response, e, true)
     var api = setPostlyAPI(e)
+    setResponseToPostData(e)
+
     runTests(e, tabId, event, api)
  }
 
@@ -3875,6 +3968,30 @@ function downloadResponse(data, res) {
             }
             aNode.click()
         }
+}
+
+function setResponseToPostData(res) {
+    var currTab = getCurrTab()
+    currTab.response = {}
+    
+    var data = res.data
+    var headers = res.headers
+    var status = res.status
+    var statusText = res.statusText
+
+    // set config
+    // currTab.response.config = res.config
+
+    currTab.response.data = data
+
+    // set statusText
+    currTab.response.statusText = statusText
+
+    // set status
+    currTab.response.status = status
+
+    // Set response headers
+    currTab.response.headers = headers
 }
 function historyItemClick(evt, tabId) {
     evt.stopPropagation()
@@ -4317,7 +4434,7 @@ function createNewReqTab(evt, tabId, data) {
                 data.body.form.forEach(function(bdy) {
                     window[`${tabId}bodyKey`].value = bdy.key
                     window[`${tabId}bodyValue`].value = bdy.value
-                    addBody(window[`${tabId}bodyKey`], window[`${tabId}bodyValue`])
+                    addBody(window[`${tabId}bodyKey`], window[`${tabId}bodyValue`], true, bdy.id)
                 });
             }         
 
@@ -4325,14 +4442,14 @@ function createNewReqTab(evt, tabId, data) {
             data.headers.forEach(function(header) {
                 window[`${tabId}headersKey`].value = header.key
                 window[`${tabId}headersValue`].value = header.value
-                addHeaders(window[`${tabId}headersKey`], window[`${tabId}headersValue`])
+                addHeaders(window[`${tabId}headersKey`], window[`${tabId}headersValue`], true, header.id)
             });
 
             // add params
-            data.params.forEach(function(bdy) {
-                window[`${tabId}paramsKey`].value = bdy.key
-                window[`${tabId}paramsValue`].value = bdy.value
-                addParams(window[`${tabId}paramsKey`], window[`${tabId}paramsValue`])
+            data.params.forEach(function(_param) {
+                window[`${tabId}paramsKey`].value = _param.key
+                window[`${tabId}paramsValue`].value = _param.value
+                addParams(window[`${tabId}paramsKey`], window[`${tabId}paramsValue`], true, _param.id)
             });            
         }
 }
@@ -4356,6 +4473,11 @@ function setResponseTab(event, tabId, what) {
         .classList.add("tab-content-active")
 }
 
+/**
+ * Fired from "Save" button in the request builder.
+ * @param {*} tabId 
+ * @param {*} openModal 
+ */
 function saveRequest(tabId, openModal) {
     if(openModal)
         attachSaveModal()
@@ -4439,6 +4561,10 @@ function saveRequest(tabId, openModal) {
     }
 }
 
+/**
+ * Fired from "Save As" option in the request builder.
+ * @param {*} evt 
+ */
 function saveRequestUrlName(evt) {
     var tabId = currentTab
     var requestName = requestUrlName.value
@@ -6928,30 +7054,6 @@ function runCollection(event, tabId, colId) {
 function runCollectionTests(tests, api) {
     var testResult = testF(tests, api)
     return testResult
-}
-
-function setPostlyAPI(res) {
-    var _postly = {}
-    var data = res.data
-    var headers = res.headers
-    var status = res.status
-    var statusText = res.statusText
-
-    // set postly data
-    _postly.config = res
-
-    _postly.response = data
-
-    // set postly responseCodeText
-    _postly.responseCodeText = statusText
-
-    // set postly responseCode
-    _postly.responseCode = status
-
-    // Set response headers to postly
-    _postly.headers = headers
-
-    return _postly
 }
 
 function extractRunnableRequests(reqs) {
