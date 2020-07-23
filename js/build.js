@@ -1431,7 +1431,7 @@ function handleIdbError(err) {
         displayNotif("The storage quota for the current origin was exceeded.", { type: "danger" })
     } else if (err.name !== "ConstraintError") {
         // Any other error
-        displayNotif(err.toString(), { type: "danger" })        
+        // displayNotif(err.toString(), { type: "danger" })        
     }
 }
 
@@ -1818,7 +1818,7 @@ function updateRequest(data, cb) {
 }
 
 function deleteRequest(data, cb) {
-    postly.requestsDb.requests.delete(data).then(function(res) {
+    postly.requestsDb.requests.delete(data.requestId).then(function(res) {
         return cb(true, res)
     }).catch(function(err) {
         handleIdbError(err)
@@ -2778,8 +2778,10 @@ function getRawEditorValue(forSave) {
         default:
             break;
     }
+    /*
     if(!forSave)
-        // postData[currentTab].headers.push({ key: "content-type", value: valType })
+        postData[currentTab].headers.push({ key: "content-type", value: valType })
+    */
 
     if(forSave)
         return { content: value, lang: lang }
@@ -2901,7 +2903,7 @@ function setBodyForSave() {
     }
 }
 
-function setHeadersBodyType(headers, postDatabody) {
+function setHeadersBodyType(headers, postDataBody) {
     var mode = postDataBody.mode
     // postData[currentTab].headers.push({ key: "content-type", value: valType })
 
@@ -3232,6 +3234,9 @@ function createNewTab(tabId) {
                                             <span style="margin: 0 2px;white-space: nowrap;" class="<!--bg-green--> color-white bd-rad-3 pad-3 ${tabId}responseStatus close"></span>
                                             <span style="white-space: nowrap;" class="<!--bg-green--> color-white bd-rad-3 pad-3 ${tabId}responseStatusText close"></span>
                                         </div>
+                                        <div class="float-right" style="display: flex;text-align: center;align-items: center;">Time: 
+                                            <span style="white-space: nowrap;" class="bd-rad-3 pad-3 ${tabId}responseTime close"></span>
+                                        </div>
                                     </li>
                                 </ul>
                             </div>
@@ -3430,6 +3435,8 @@ function send(event, tabId) {
         }
     }
 
+    var now = Date.now()
+
     axiosInst({
         method: METHOD.toLowerCase(),
         url: url,
@@ -3437,7 +3444,8 @@ function send(event, tabId) {
         headers,
         maxRedirects: getFromWindow(`${tabId}maxRedirects`).value || 0,
         withCredentials: postData.withcredentials || false
-    }).then( res => {
+    }).then(res => {
+        setTimeResponse(tabId, now, Date.now())
         processResponse(res, tabId, event)
     }).catch(e => {
         // process error response
@@ -3664,6 +3672,13 @@ function setResponseStatusText(statusText, tabId) {
         statusNode.classList.add("bg-default")
         statusNode.classList.remove("close")
     }
+}
+
+function setTimeResponse(tabId, startTime, endTime) {
+    var timeNode = document.querySelector(`.${tabId}responseTime`)
+    timeNode.classList.remove("close")
+    timeNode.classList.add("color-default")
+    timeNode.innerText = Math.ceil((endTime - startTime) / 3600) + "s"
 }
 
 function processResponse(res, tabId, event) {
@@ -4677,21 +4692,20 @@ function saveRequestUrlName(evt) {
 
         })
     } else {
-        updateRequest(postData[currentTab], (done, res) => {
-            log(done, res)
-            if(done) {
-                
-            }
+        updateRequest(postData[currentTab], (doneReqUpdate, res) => {
+            log(doneReqUpdate, res)
             // reset the modal    
             evt.target.innerText = "Save"
             evt.target.removeAttribute("disabled")
-
-            modalRequestError.innerHTML = ""
-            modalRequestError.classList.add("close")
-            requestUrlName.value = ""
-            refreshCollections()
-            window[`${currentTab}TabName`].innerHTML = requestName
-            window[`${currentTab}TabMethod`].innerHTML = postData[currentTab].methodType
+            if (doneReqUpdate) {
+                modalRequestError.innerHTML = ""
+                modalRequestError.classList.add("close")
+                requestUrlName.value = ""
+                refreshCollections()
+                window[`${currentTab}TabName`].innerHTML = requestName
+                window[`${currentTab}TabMethod`].innerHTML = postData[currentTab].methodType
+                closeActiveModals()
+            }
         })
     }
 
@@ -7545,9 +7559,16 @@ function addReqCollection(event) {
             //log("addReqCollection:", done, res)
             // request exits
             if(done) {
-                updateRequest(postData[currentTab], () => {})
+                updateRequest(postData[currentTab], (doneReq, resUpdateReq) => {
+                    if (doneReq) {
+                        closeActiveModals()                        
+                    }
+                })
             } else {
                 addRequest(postData[currentTab], (doneReq, resReq) => {
+                    if (doneReq) {
+                        closeActiveModals()                        
+                    }
                     //log("addRequest:", doneReq, resReq, postData[currentTab])
                 })
             }
@@ -7620,7 +7641,9 @@ function removeReqFromCollection(tabId) {
     // log("Remove from collection")
     if(confirm("Do you really want to remove this request?")) {
         if(checkTeamIsPersonal()) {
-            deleteRequest(postData[currentTab], (done, res) => {})
+            deleteRequest(postData[currentTab], (done, res) => {
+
+            })
         } else {
             // network
         }
@@ -7718,11 +7741,11 @@ function deleteCollection(colId) {
             deleteCollectionDb({
                 collectionId: colId
             }, (done, res) => {
-                getRequestsbyColId(colId, (done, res) => {
+                getRequestsbyColId(colId, (_done, reqs) => {
                     if(done) {
-                        if(reqs)
+                        if(_done && reqs)
                             reqs.forEach(req => {
-                                deleteRequest(req, (done, r) => {
+                                deleteRequest(req, (d, r) => {
                                     refreshCollections()
                                 })
                             })
