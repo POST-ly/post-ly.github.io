@@ -1431,7 +1431,7 @@ function handleIdbError(err) {
         displayNotif("The storage quota for the current origin was exceeded.", { type: "danger" })
     } else if (err.name !== "ConstraintError") {
         // Any other error
-        // displayNotif(err.toString(), { type: "danger" })        
+        displayNotif(err.toString(), { type: "danger" })        
     }
 }
 
@@ -2548,9 +2548,7 @@ function getBinaryValue(cb) {
     }
     reader.readAsDataURL(files.files[0])  
 }
-function graphQLTab() {
-
-}
+function graphQLTab() {}
 
 function createGraphQLDisplay(tabId) {
     return `
@@ -2631,7 +2629,7 @@ function getGraphQLEditorValue(forSave) {
     }
     if(!forSave) {
         // set appropriate headers
-        postData[currentTab].headers.push({key: "content-type", value: "application/json"})
+        // postData[currentTab].headers.push({key: "content-type", value: "application/json"})
     }
     return {
         query,
@@ -2781,7 +2779,7 @@ function getRawEditorValue(forSave) {
             break;
     }
     if(!forSave)
-        postData[currentTab].headers.push({ key: "content-type", value: valType })
+        // postData[currentTab].headers.push({ key: "content-type", value: valType })
 
     if(forSave)
         return { content: value, lang: lang }
@@ -2902,6 +2900,56 @@ function setBodyForSave() {
             break;
     }
 }
+
+function setHeadersBodyType(headers, postDatabody) {
+    var mode = postDataBody.mode
+    // postData[currentTab].headers.push({ key: "content-type", value: valType })
+
+    switch (mode) {
+        case "form":
+            headers["content-type"] = "multipart/form-data"
+            break;
+        case "graphql":
+            headers["content-type"] = "application/json"
+            break;
+        case "raw":
+            var lang = postDatabody["raw"].lang
+            setHeadersRawMode(headers, lang)
+            break;
+        default:
+            break;
+    }
+
+}
+
+function setHeadersRawMode(headers, lang) {
+    var valType
+    switch (lang) {
+        case "json":
+            // set appropriate headers
+            valType = "application/json"
+            break;
+        case "text":
+            // set appropriate headers
+            valType = "text/plain"
+            break;
+        case "xml":
+            // set appropriate headers
+            valType = "text/xml"
+            break;
+        case "javascript":
+            // set appropriate headers
+            valType = "application/javascript"
+            break;
+        case "html":
+            // set appropriate headers
+            valType = "text/html"
+        default:
+            break;
+    }
+    headers["content-type"] = valType
+}
+
 function buildParamsToUrl(params, url) {
     url = new URL(url)
     for (var index = 0; index < params.length; index++) {
@@ -3305,6 +3353,9 @@ function send(event, tabId) {
                 headers[parseVarsAndReplace(header.key)] = parseVarsAndReplace(header.value)
             })
         }
+
+        // set headers for bdy type.
+        setHeadersBodyType(headers, postData[tabId].body)
     } catch(e) {}
 
     try {
@@ -4429,14 +4480,25 @@ function createNewReqTab(evt, tabId, data) {
                 getFromWindow(`${tabId}useProxyOption`).checked = postData[currentTab].options.useproxy
             }
 
-            // add body   
-            if(data.body.form) {
-                data.body.form.forEach(function(bdy) {
-                    window[`${tabId}bodyKey`].value = bdy.key
-                    window[`${tabId}bodyValue`].value = bdy.value
-                    addBody(window[`${tabId}bodyKey`], window[`${tabId}bodyValue`], true, bdy.id)
-                });
-            }         
+            // set auth
+            if (data.authorization) {
+                setRequestAuth(data.authorization, tabId)
+            }
+
+            // set body
+            if(data.body.mode == "form") {
+                // add body   
+                if(data.body.form) {
+                    data.body.form.forEach(function(bdy) {
+                        window[`${tabId}bodyKey`].value = bdy.key
+                        window[`${tabId}bodyValue`].value = bdy.value
+                        addBody(window[`${tabId}bodyKey`], window[`${tabId}bodyValue`], true, bdy.id)
+                    });
+                }         
+            }
+            if (data.body.mode) {
+                setBodyType(data.body.mode, data.body.mode[0].toUpperCase() + data.body.mode.slice(1))
+            }
 
             // add headers
             data.headers.forEach(function(header) {
@@ -4701,6 +4763,61 @@ function collectAllRequestData(tabId) {
     }
 
     setBodyForSave()
+}
+
+function setRequestAuth(auth, tabId) {
+    var authName = auth.type
+    switch (authName) {
+        case 'Basic':
+            getFromWindow(`${tabId}authBasicUsername`).value = auth.username
+            getFromWindow(`${tabId}authBasicPassword`).value = auth.password
+            break;
+        case 'Bearer':
+            getFromWindow(`${tabId}authBearerToken`).value = auth.token
+            break;
+        case "Digest":
+            break;
+
+        case "APIKey":
+            getFromWindow(`${tabId}authAPIKey`).value = auth.auth_key
+            getFromWindow(`${tabId}authAPIValue`).value = auth.auth_value
+            getFromWindow(`${tabId}setApiKeyAddToType`).dataset.value = auth.whereToAdd
+            if (auth.whereToAdd == "params") {
+                getFromWindow(`${tabId}setApiKeyAddToType`).innerHTML = "Query Params"
+            } else {
+                if (auth.whereToAdd == "header") {
+                    getFromWindow(`${tabId}setApiKeyAddToType`).innerHTML = "Header"
+                }
+            }
+            break;
+
+        default:
+            break;
+    }
+    // remove the active tab and tab-content
+    document.querySelector(`.${tabId}AuthTab.tab-active`).classList.remove(".tab-active")
+    document.querySelector(`.${tabId}AuthTab.tab-content-active`).classList.remove(".tab-content-active")
+
+    // data-tab="${tabId}AuthTab:apiKey"
+    document.querySelectorAll(`.${tabId}AuthTab.tab`).forEach(n => {
+        if (n.dataset.tab.toLowerCase() == authName.toLowerCase()) {
+            n.classList.add("tab-active")
+        }
+    })
+    document.querySelectorAll(`.${tabId}AuthTab.tab-content`).forEach(n => {
+        if (n.dataset.tab.toLowerCase() == authName.toLowerCase()) {
+            n.classList.add("tab-content-active")
+        }
+    })
+
+    // check if icon-check exist and remove it
+    var nodeExist = document.querySelector(`.${tabId}AuthTabCheck.icon-check`)
+    if (nodeExist) {
+        nodeExist.parentNode.removeChild(nodeExist)
+    }
+    // set this 
+    document.querySelector(`.${tabId}AuthTab.tab-active`)
+        .innerHTML += `<span class="${tabId}AuthTabCheck icon-check" style="padding-right: 8px; color: rgb(221,75,57); font-weight: 800;" class="icon-check"></span>`
 }
 function Request() {
     this.body = {}
