@@ -3678,7 +3678,7 @@ function setTimeResponse(tabId, startTime, endTime) {
     var timeNode = document.querySelector(`.${tabId}responseTime`)
     timeNode.classList.remove("close")
     timeNode.classList.add("color-default")
-    timeNode.innerText = Math.ceil((endTime - startTime) / 3600) + "s"
+    timeNode.innerText = Math.ceil((endTime - startTime) / 1000) + "s"
 }
 
 function processResponse(res, tabId, event) {
