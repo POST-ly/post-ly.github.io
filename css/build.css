@@ -1810,3 +1810,100 @@ a {
     }
 }
 
+.chatWrapper {
+  position: fixed;
+  z-index: 1002;
+  top: 0;
+  right: 0;
+  height: 99vh;
+  background-color: white;
+  width: 394px;
+  box-shadow: 0 8px 14px 0 rgba(0, 0, 0, 0.38);
+  transition: display .5s cubic-bezier(0.22, 0.99, 0.68, 0.98);
+}
+@media(max-width: 394px) {
+  .chatWrapper {
+    width: 100%;
+  }
+}
+
+.chatHead {
+  font-size: 1.375em;
+  padding: 11px 3px;
+  border-bottom: 1px solid rgb(221, 221, 221);
+}
+
+.chatTextInput {
+  border-bottom: 1px solid rgb(221, 221, 221);
+  padding: 4px 2px;
+}
+
+.chatBody {
+  padding: 2px;
+  height: 81vh;
+  overflow-y: scroll;
+}
+
+.teamChatButton {
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  padding: 0;
+}
+
+.chatItem {
+  padding: 4px;
+  border: 1px solid rgb(221, 221, 221);
+  /* border-radius: 3px; */
+  margin: 7px;
+
+  background-color: rgb(221, 221, 221);
+  border-radius: 0 12px 12px;
+}
+
+.chatItemBody {
+  padding: 12px;
+  word-wrap: anywhere;
+}
+
+.meChatItem {
+  text-align: right;
+  background-color: tomato;
+  color: white;
+  border-radius: 12px 12px 0;
+}
+
+.chatItemHead {
+  padding: 2px 0;
+  color: grey;
+}
+
+.meChatItemHead {
+  color: white;
+}
+
+.chatIconNotif {
+  color: white;
+  border-radius: 4px;
+  position: absolute;
+  background-color: red;
+  padding: 1px 5px;
+  text-align: center;
+  top: -8px;
+  left: 8px;
+  font-size: 12px;
+}
+
+.authBody {
+    width: 360px;
+}
+
+.authBody input {
+    border-radius: unset;
+}
+
+@media(max-width: 360px) {
+    .authBody {
+        width: 98%;
+    }
+}
