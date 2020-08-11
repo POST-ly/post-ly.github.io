@@ -8808,19 +8808,54 @@ function renameTeamView(teamId) {
             </div>
 
             <div class="modal-footer">
-                <button onclick="return renameTeam(event, ${teamId})" class="createCollectionModalBtn bg-default color-white pad-6 pad-left-12 pad-right-12">Rename</button>
+                <button onclick="return renameTeam(event, '${teamId}')" class="createCollectionModalBtn bg-default color-white pad-6 pad-left-12 pad-right-12">Rename</button>
             </div>        
     `, document.querySelector(".allTeamsModalBody"))
 }
 
 function renameTeam(evt, teamId) {
     // id = newTeamName
+    var teamName = getFromWindow("newTeamName").value
+
+    if (teamName.length <= 0) {
+        displayNotif("Pease, enter a team name", { type: "danger" })
+        return
+    }
+
+    if (teamName.length <= 2) {
+        displayNotif("Team name is too short.", { type: "danger" })
+        return
+    }
+
+    var targ = evt.target
+    targ.setAttribute("disabled", true)
+    targ.innerHTML = "Renaming team..."
+
+    axios.post(url + "teams/edit/" + teamId, {
+        name: teamName
+    }).then(res => {
+        targ.removeAttribute("disabled", null)
+        targ.innerHTML = "Rename Team"
+        if (res.data.error) {
+            displayNotif(res.data.error, { type: "danger" })
+            return 
+        }
+        displayNotif("Team successfully renamed.", { type: "success" })
+        loadTeams()
+        getFromWindow("renderAllTeamsNode").innerHTML = renderAllTeams()
+        renderOverlay.goBack(new Event("click"))
+    }).catch(err => {
+        targ.removeAttribute("disabled", null)
+        targ.innerHTML = "Rename Team"
+        displayNotif(err, { type: "danger" })
+    })
 }
 
 function removeUser(event, userId) {
     var w = getFromWindow("wait" + userId)
-    if (confirm("Dou you really wish to remove this user?")) {
+    if (confirm("Do you really wish to remove this user?")) {
         w.classList.remove("close")
+
         setTimeout(() => {
             displayNotif(JSON.stringify({
                 userIdToRemoveFromTeam: userId,
@@ -8829,6 +8864,7 @@ function removeUser(event, userId) {
             w.classList.add("close")            
         }, 1000);
         return
+
         axios.post(url + "/team/remove/user", {
             userIdToRemoveFromTeam: userId,
             teamId: currentTeam.id
@@ -8847,16 +8883,22 @@ function deleteTeam(teamId) {
     var w = getFromWindow("wait" + teamId)
     if (confirm("Dou you really wish to delete this team?")) {
         w.classList.remove("close")
+
+        /*
         setTimeout(() => {
             displayNotif(JSON.stringify({
                 teamId
             }, null, "\t"))
             w.classList.add("close")            
         }, 1000);
-        return
+        return */
 
-        axios.post(url + "/teams/" + teamId).then(res => {
+        axios.delete(url + "/teams/" + teamId).then(res => {
             w.classList.add("close")
+            if (res.data.error) {
+                displayNotif(res.data.error, { type: "danger" })
+                return
+            }
             loadTeams()
             getFromWindow("renderAllTeamsNode").innerHTML = renderAllTeam()
         }).catch(err => {
@@ -8902,6 +8944,10 @@ function addUserToTeam(event, userId) {
         targ.innerHTML = "Add User"
     })
 }
+
+
+
+
 function createTeamModal(event) {
     var newTeamModalHtm = `
     <!-- <div class="modal"> -->
@@ -9113,10 +9159,12 @@ function selectTeam(teamId, teamName) {
         getFromWindow("currentTeamDisplay").innerText = teamName
         location.reload()
     } else {
+        /*
         if (!IsUserAuth()) {
             displayNotif("Please, You must sign in before selecting this team.", {type: "danger"})
             return
         }
+        */
         localStorage.setItem("currentTeam", JSON.stringify({ id: teamId, name: teamName }))
         getFromWindow("currentTeamDisplay").innerText = teamName
         location.reload()
